@@ -86,7 +86,7 @@ namespace StarterAssets
         private float _targetRotation = 0.0f;
         private float _rotationVelocity;
         private float _verticalVelocity;
-        private float _terminalVelocity = 53.0f;
+        private float terminalVelocity = 53f;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -106,6 +106,7 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private CupController cupController;
 
         private const float _threshold = 0.01f;
 
@@ -348,7 +349,7 @@ namespace StarterAssets
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-            if (_verticalVelocity < _terminalVelocity)
+            if (_verticalVelocity < terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
             }
@@ -389,6 +390,27 @@ namespace StarterAssets
             {
                 _audioManager.PlayLanding(transform.TransformPoint(_controller.center));
             }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            _verticalVelocity = 5f;
+            terminalVelocity = 0f;
+
+            cupController = GetComponent<CupController>();
+
+            if (cupController != null)
+            {
+                Debug.Log("Holding " + cupController.HeldType);
+            }
+
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            Debug.Log("leaving");
+            _verticalVelocity = 5f;
+            terminalVelocity = 53f;
         }
     }
 }
