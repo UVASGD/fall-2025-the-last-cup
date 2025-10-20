@@ -52,7 +52,7 @@ public class CupController : MonoBehaviour {
 
 		// Update cooldown
 		if (IsInCooldown) cooldownTimer -= Time.deltaTime;
-
+		//this.animationManager.Walk(this.movementController.CurrentVelocity.magnitude);
 		// Handle base interactions
 		if (Input.GetMouseButtonDown(0) && IsFull && !IsInCooldown)
 			TryDescoop();
