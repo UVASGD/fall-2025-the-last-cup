@@ -8228,6 +8228,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1338489537}
     - target: {fileID: 5019629367168265698, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
+      propertyPath: ConsumesWater
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5019629367168265698, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
       propertyPath: projectileConfig
       value: 
       objectReference: {fileID: 1252124463}

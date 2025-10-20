@@ -31,8 +31,7 @@ public class WaterManager : MonoBehaviour {
 
 	//###################################################################################################
 	void Awake() {
-		this.cupController = this.StrictComponentFetch<CupController>();
-		if (this.cupController == null) this.enabled = false;
+		if (!this.StrictTryGetComponent(out cupController)) this.enabled = false;
 
 		this.selfColliders = GetComponentsInChildren<Collider>();
 
@@ -46,6 +45,9 @@ public class WaterManager : MonoBehaviour {
         // Refills if previously empty
         if (currentWater == 0 && HasWater()) {
             currentWater = 100f;
+        }
+        if (currentWater > 0 && !HasWater()) {
+            currentWater = 0;
         }
 	}
 
@@ -118,8 +120,8 @@ public class WaterManager : MonoBehaviour {
 	}
 
 	private void SetupProjectilePhysics(GameObject go, Vector3 direction) {
-		var col = WaterManager.GetOrAddComponent<Collider, SphereCollider>(go);
-		var rb = WaterManager.GetOrAddComponent<Rigidbody>(go);
+		var col = go.GetOrAddComponent<Collider, SphereCollider>();
+		var rb = go.GetOrAddComponent<Rigidbody>();
 
 		col.isTrigger = true;
 		rb.useGravity = true;
@@ -134,7 +136,7 @@ public class WaterManager : MonoBehaviour {
 	}
 
 	private void InitializeWaterProjectile(GameObject go) {
-		var proj = WaterManager.GetOrAddComponent<WaterProjectile>(go);
+		var proj = go.GetOrAddComponent<WaterProjectile>();
 		// Filter out null/disabled colliders
 		var validColliders = selfColliders?.Where((col) => col != null && col.enabled).ToArray();
 		proj.Init(projectileConfig.damage, projectileConfig.lifetime, validColliders);
@@ -142,19 +144,5 @@ public class WaterManager : MonoBehaviour {
 
 	//###################################################################################################
 	//Utility functions
-	//TODO: move into utility script
-	private static T GetOrAddComponent<T>(GameObject go) where T : Component 
-		=> go.TryGetComponent(out T result) ? result : go.AddComponent<T>();
-	private static T GetOrAddComponent<T, V>(GameObject go) where T : Component where V : T
-		=> go.TryGetComponent(out T result) ? result : go.AddComponent<V>();
 		
-		
-
-	//TODO: move into a utility script
-	private T StrictComponentFetch<T>() where T : Component {
-		if (this.gameObject.TryGetComponent<T>(out var result) is false) {
-			Debug.LogError($"{this.GetType().Name} requires a {typeof(T)} component on the same GameObject!");
-			return null;
-		} else return result;
-	}
 }

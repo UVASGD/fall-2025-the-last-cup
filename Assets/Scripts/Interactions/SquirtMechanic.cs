@@ -21,8 +21,8 @@ public class SquirtMechanic : MonoBehaviour
 
     void Awake()
 	{
-		if (!this.AttemptComponentFetch(out this.cupController)) this.enabled = false;
-		if (!this.AttemptComponentFetch(out this.waterManager)) this.enabled = false;
+		if (!this.StrictTryGetComponent(out this.cupController)) this.enabled = false;
+		if (!this.StrictTryGetComponent(out this.waterManager)) this.enabled = false;
 
         selfColliders = GetComponentsInChildren<Collider>();
 
@@ -101,19 +101,5 @@ public class SquirtMechanic : MonoBehaviour
 			Gizmos.DrawWireSphere(strawTip.position, 0.02f);
 			Gizmos.DrawRay(strawTip.position, strawTip.forward * 0.5f);
 		}
-	}
-	
-
-
-	//TODO: move into a utility script
-	private bool AttemptComponentFetch<T>(out T result) where T : Component 
-	{
-        result = this.gameObject.GetComponent<T>();
-		if (result == null) 
-		{
-			Debug.LogError($"{this.GetType().Name} requires a {typeof(T)} component on the same GameObject!");
-			return false;
-		} 
-		else return true;
 	}
 }

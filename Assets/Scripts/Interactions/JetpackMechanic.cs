@@ -13,8 +13,8 @@ public class JetpackMechanic : MonoBehaviour {
 
 	//###################################################################################################
 	void Awake() {
-		if (!this.AttemptComponentFetch(out this.cupController)) this.enabled = false;
-		if (!this.AttemptComponentFetch(out this.waterManager)) this.enabled = false;
+		if (!this.StrictTryGetComponent(out this.cupController)) this.enabled = false;
+		if (!this.StrictTryGetComponent(out this.waterManager)) this.enabled = false;
 
 		// Setup projectile layer collision rules
 		if (this.projectileConfig != null) {
@@ -57,15 +57,7 @@ public class JetpackMechanic : MonoBehaviour {
 
 	//###################################################################################################
 	
-	//TODO: move into a utility script
-	private bool AttemptComponentFetch<T>(out T result) where T : Component {
-        result = this.gameObject.GetComponent<T>();
-		if (result == null) {
-			Debug.LogError($"{this.GetType().Name} requires a {typeof(T)} component on the same GameObject!");
-			return false;
-		} else return true;
-	}
-	
+
 	// Debug visualization
 	private void OnDrawGizmosSelected() {
 		if (this.lNozzle && this.rNozzle) {
