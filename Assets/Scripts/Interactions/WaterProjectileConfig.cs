@@ -14,8 +14,12 @@ public class WaterProjectileConfig : MonoBehaviour
 
     [Header("Visuals")]
     public Material waterMaterial;
-    public GameObject waterProjectilePrefab;
+	public GameObject waterProjectilePrefab;
+	// public GameObject waterSplashPrefab;
 
-    [Header("Layer")]
-    public string projectileLayerName = "WaterProjectile";
+	[Header("Layer")]
+	public string projectileLayerName = "WaterProjectile";
+
+
+	public bool TryGetProjectileLayer(out int layer) => ((layer = LayerMask.NameToLayer(this.projectileLayerName)) != -1);
 }

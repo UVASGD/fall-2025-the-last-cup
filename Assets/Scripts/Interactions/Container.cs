@@ -95,12 +95,12 @@ public class Container : MonoBehaviour, IInteractable
         if (!isActiveAndEnabled) return;
         if (!Application.isPlaying)
         {
-            ApplyInitialContents();
+            ApplyInitialContents(fromOnValidate:true);
         }
     }
 #endif
 
-    private void ApplyInitialContents()
+    private void ApplyInitialContents(bool fromOnValidate = false)	//fromOnValidate is used only to ensure we are not trying to set game objects active during on validate calls because unity warnings.
     {
         if (containerLevels == null) return;
 
@@ -138,7 +138,7 @@ public class Container : MonoBehaviour, IInteractable
             stackedTypes.Add(normalizedType);
 
             var level = containerLevels[i];
-            ApplyLevelVisual(level, item.material, true);
+            ApplyLevelVisual(level, item.material, true, fromOnValidate);
             SetLevelColliderTrigger(level, normalizedType == ScoopableObject.ScoopType.Water);
         }
 
@@ -155,12 +155,12 @@ public class Container : MonoBehaviour, IInteractable
         };
     }
 
-    private void ApplyLevelVisual(GameObject level, Material mat, bool active)
-    {
-        if (level == null) return;
-        var mr = level.GetComponent<MeshRenderer>();
-        if (mr != null) mr.material = mat;
-        level.SetActive(active);
+	private void ApplyLevelVisual(GameObject level, Material mat, bool active, bool fromOnValidate = false)
+	{
+		if (level == null) return;
+		var mr = level.GetComponent<MeshRenderer>();
+		if (mr != null) mr.material = mat;
+		if (!fromOnValidate) level.SetActive(active);
     }
 
     private void SetLevelColliderTrigger(GameObject level, bool isTrigger)

@@ -58,8 +58,10 @@ namespace StarterAssets
         [Tooltip("The height the player can jump")]
         public float JumpHeight = 1.2f;
 
-        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-        public float Gravity = -15.0f;
+		[Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+		public float Gravity = -15.0f;
+		[Tooltip("If gravity should be applied to the character. Disable to float.")]
+		public bool ApplyGravity = true;
 
         [Space(10)]
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
@@ -255,231 +257,222 @@ namespace StarterAssets
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
                 _cinemachineTargetYaw, 0.0f);
         }
+		public Vector3 CurrentVelocity => this._controller.velocity;
+		private void Move() {
+			_isAiming = Input.GetKey(KeyCode.Mouse1);
 
-        private void Move()
-        {
-            _isAiming = Input.GetKey(KeyCode.Mouse1);
+			// Handles transition between aiming and not aiming to allow for camera/animation transition
+			if (_isAiming && !_isAimingActive) {
+				_aimTransitionTime += Time.deltaTime;
+				if (_aimTransitionTime >= AimTransitionTime) {
+					_aimTransitionTime = AimTransitionTime;
+					_isAimingActive = true;
+				}
+			} else if (!_isAiming && _isAimingActive) {
+				_aimTransitionTime -= Time.deltaTime;
+				if (_aimTransitionTime <= 0) {
+					_aimTransitionTime = 0;
+					_isAimingActive = false;
+				}
+			}
 
-            // Handles transition between aiming and not aiming to allow for camera/animation transition
-            if (_isAiming && !_isAimingActive)
-            {
-                _aimTransitionTime += Time.deltaTime;
-                if (_aimTransitionTime >= AimTransitionTime)
-                {
-                    _aimTransitionTime = AimTransitionTime;
-                    _isAimingActive = true;
-                }
-            }
-            else if (!_isAiming && _isAimingActive)
-            {
-                _aimTransitionTime -= Time.deltaTime;
-                if (_aimTransitionTime <= 0)
-                {
-                    _aimTransitionTime = 0;
-                    _isAimingActive = false;
-                }
-            }
+			// set target speed based on move speed, sprint speed and if sprint is pressed
 
-            // set target speed based on move speed, sprint speed and if sprint is pressed
+			float targetSpeed;
+			if (_isAimingActive) {
+				targetSpeed = AimSpeed;
+			} else {
+				targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			}
 
-            float targetSpeed;
-            if (_isAimingActive)
-            {
-                targetSpeed = AimSpeed;
-            }
-            else
-            {
-                targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-            }
+			Cinemachine3rdPersonFollow personFollow = CinemachineCamData.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
 
-            Cinemachine3rdPersonFollow personFollow = CinemachineCamData.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+			// Adjusts camera based on aim state
+			float mid = (BottomClamp + TopClamp) / 2;
+			float midDiff = TopClamp - mid;
+			float pitchScale = (Mathf.Abs(_cinemachineTargetPitch - mid) / midDiff);
+			Vector3 trueOffSet;
+			if (_aimTransitionTime > 0) {
+				trueOffSet = Vector3.Lerp(AimShoulderOffset, AimShoulderFullPitchOffset, pitchScale);
+			} else {
+				trueOffSet = new Vector3(0, 0, 0);
+			}
+			personFollow.CameraSide = Mathf.Lerp(0.5f, 0.5f + trueOffSet.x, _aimTransitionTime / AimTransitionTime);
+			personFollow.ShoulderOffset.y = Mathf.Lerp(0f, 0 + trueOffSet.y, _aimTransitionTime / AimTransitionTime);
+			personFollow.ShoulderOffset.z = Mathf.Lerp(0f, 0 + trueOffSet.z, _aimTransitionTime / AimTransitionTime);
 
-            // Adjusts camera based on aim state
-            float mid = (BottomClamp + TopClamp) / 2;
-            float midDiff = TopClamp - mid;
-            float pitchScale = (Mathf.Abs(_cinemachineTargetPitch - mid) / midDiff);
-            Vector3 trueOffSet;
-            if (_aimTransitionTime > 0)
-            {
-                trueOffSet = Vector3.Lerp(AimShoulderOffset, AimShoulderFullPitchOffset, pitchScale);
-            }
-            else
-            {
-                trueOffSet = new Vector3(0, 0, 0);
-            }
-            personFollow.CameraSide = Mathf.Lerp(0.5f, 0.5f + trueOffSet.x, _aimTransitionTime / AimTransitionTime);
-            personFollow.ShoulderOffset.y = Mathf.Lerp(0f, 0 + trueOffSet.y, _aimTransitionTime / AimTransitionTime);
-            personFollow.ShoulderOffset.z = Mathf.Lerp(0f, 0 + trueOffSet.z , _aimTransitionTime / AimTransitionTime);
+			// Raycasts from camera to check where to shoot
+			Vector3 rayHitPoint = new Vector3();
+			if (_aimTransitionTime > 0) {
+				Ray cameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+				Ray trueRay = new Ray(cameraRay.origin + cameraRay.direction * AimRayOffset, cameraRay.direction);
 
-            // Raycasts from camera to check where to shoot
-            Vector3 rayHitPoint = new Vector3();
-            if (_aimTransitionTime > 0)
-            {
-                Ray cameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-                Ray trueRay = new Ray(cameraRay.origin + cameraRay.direction * AimRayOffset, cameraRay.direction);
+				RaycastHit cameraHit;
+				Physics.Raycast(trueRay, out cameraHit);
+				// Checks middle
+				if (cameraHit.collider == null) {
+					rayHitPoint = trueRay.origin + trueRay.direction * 1000;
+				} else {
+					rayHitPoint = cameraHit.point;
+				}
+			}
 
-                RaycastHit cameraHit;
-                Physics.Raycast(trueRay, out cameraHit);
-                // Checks middle
-                if (cameraHit.collider == null)
-                {
-                    rayHitPoint = trueRay.origin + trueRay.direction * 1000;
-                }
-                else
-                {
-                    rayHitPoint = cameraHit.point;
-                }
-            }
+			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+			// if there is no input, set the target speed to 0
+			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+			// a reference to the players current horizontal velocity
+			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
-            // a reference to the players current horizontal velocity
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+			float speedOffset = 0.1f;
+			float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+			// accelerate or decelerate to target speed
+			if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+				currentHorizontalSpeed > targetSpeed + speedOffset) {
+				// creates curved result rather than a linear one giving a more organic speed change
+				// note T in Lerp is clamped, so we don't need to clamp our speed
+				_speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+					Time.deltaTime * SpeedChangeRate);
 
-            // accelerate or decelerate to target speed
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
-            {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate);
+				// round speed to 3 decimal places
+				_speed = Mathf.Round(_speed * 1000f) / 1000f;
+			} else {
+				_speed = targetSpeed;
+			}
 
-                // round speed to 3 decimal places
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
-            }
-            else
-            {
-                _speed = targetSpeed;
-            }
+			_animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+			if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
+			// normalise input direction
+			Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
-            // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+			// if there is a move input rotate player when the player is moving
+			if (_input.move != Vector2.zero || _aimTransitionTime > 0) {
+				_targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+					_mainCamera.transform.eulerAngles.y;
+				float rotation;
 
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero || _aimTransitionTime > 0)
-            {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                    _mainCamera.transform.eulerAngles.y;
-                float rotation;
+				// Alters rotation based off of aim transition state
+				if (_aimTransitionTime <= 0) {
+					rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+				} else {
+					Vector3 rayDiff = rayHitPoint - gameObject.transform.position;
+					float resultRot = Mathf.Atan2(rayDiff.x, rayDiff.z) * Mathf.Rad2Deg;
+					rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, resultRot, ref _rotationVelocity, RotationSmoothTime / 3);
+				}
 
-                // Alters rotation based off of aim transition state
-                if (_aimTransitionTime <= 0)
-                {
-                    rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-                }
-                else
-                {
-                    Vector3 rayDiff = rayHitPoint - gameObject.transform.position;
-                    float resultRot = Mathf.Atan2(rayDiff.x, rayDiff.z) * Mathf.Rad2Deg;
-                    rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, resultRot, ref _rotationVelocity, RotationSmoothTime/3);
-                }
-
-                // rotate to face input direction relative to camera position
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-            }
+				// rotate to face input direction relative to camera position
+				transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+			}
 
 
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+			Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // move the player
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			// move the player
+			_controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+							 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-            }
-        }
+			// update animator if using character
+			if (_hasAnimator) {
+				_animator.SetFloat(_animIDSpeed, _animationBlend);
+				_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+			}
+		}
 
+
+
+
+
+
+
+
+		//This is used to implement flying from the jetpack.
+		public void SetVerticalVelocity(float newVelocity) => this._verticalVelocity = newVelocity;
         private void JumpAndGravity()
         {
-            if (Grounded)
-            {
-                // reset the fall timeout timer
-                _fallTimeoutDelta = FallTimeout;
+			if (Grounded) {
+				// reset the fall timeout timer
+				_fallTimeoutDelta = FallTimeout;
 
-                // update animator if using character
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDJump, false);
-                    _animator.SetBool(_animIDFreeFall, false);
-                }
+				// update animator if using character
+				if (_hasAnimator) {
+					_animator.SetBool(_animIDJump, false);
+					_animator.SetBool(_animIDFreeFall, false);
+				}
 
-                // stop our velocity dropping infinitely when grounded
-                if (_verticalVelocity < 0.0f)
-                {
-                    _verticalVelocity = -2f;
-                }
+				// stop our velocity dropping infinitely when grounded
+				if (_verticalVelocity < 0.0f) {
+					_verticalVelocity = -2f;
+				}
 
-                // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-                {
-                    // the square root of H * -2 * G = how much velocity needed to reach desired height
-                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+				// Jump
+				if (_input.jump && _jumpTimeoutDelta <= 0.0f) {
+					// the square root of H * -2 * G = how much velocity needed to reach desired height
+					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
 
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDJump, true);
-                    }
-                }
+					// update animator if using character
+					if (_hasAnimator) {
+						_animator.SetBool(_animIDJump, true);
+					}
+				}
 
-                // jump timeout
-                if (_jumpTimeoutDelta >= 0.0f)
-                {
-                    _jumpTimeoutDelta -= Time.deltaTime;
-                }
-            }
-            else
-            {
-                // reset the jump timeout timer
-                _jumpTimeoutDelta = JumpTimeout;
+				// jump timeout
+				if (_jumpTimeoutDelta >= 0.0f) {
+					_jumpTimeoutDelta -= Time.deltaTime;
+				}
+			} else {
+				// reset the jump timeout timer
+				_jumpTimeoutDelta = JumpTimeout;
 
-                // fall timeout
-                if (_fallTimeoutDelta >= 0.0f)
-                {
-                    _fallTimeoutDelta -= Time.deltaTime;
-                }
-                else
-                {
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDFreeFall, true);
-                    }
-                }
+				// fall timeout
+				if (_fallTimeoutDelta >= 0.0f) {
+					_fallTimeoutDelta -= Time.deltaTime;
+				} else {
+					// update animator if using character
+					if (_hasAnimator) {
+						_animator.SetBool(_animIDFreeFall, true);
+					}
+				}
 
-                // if we are not grounded, do not jump
-                _input.jump = false;
-            }
+				// if we are not grounded, do not jump
+				_input.jump = false;
+			}
 
-            // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-            if (_verticalVelocity < _terminalVelocity)
-            {
-                _verticalVelocity += Gravity * Time.deltaTime;
-            }
+			if (ApplyGravity || _verticalVelocity > 0f) {
+				// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+				if (_verticalVelocity < _terminalVelocity) {
+					_verticalVelocity += Gravity * Time.deltaTime;
+				}
+			} else _verticalVelocity = 0f;
+
+
         }
 
-        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-        {
-            if (lfAngle < -360f) lfAngle += 360f;
-            if (lfAngle > 360f) lfAngle -= 360f;
-            return Mathf.Clamp(lfAngle, lfMin, lfMax);
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		private static float ClampAngle(float lfAngle, float lfMin, float lfMax) {
+			if (lfAngle < -360f) lfAngle += 360f;
+			if (lfAngle > 360f) lfAngle -= 360f;
+			return Mathf.Clamp(lfAngle, lfMin, lfMax);
+		}
 
         private void OnDrawGizmosSelected()
         {

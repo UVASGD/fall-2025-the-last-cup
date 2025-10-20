@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum EquipmentType { None, Straw, BucketHandle }
+public enum EquipmentType { None, Straw, BucketHandle, JetPack }
 
 [DisallowMultipleComponent]
 public class EquipmentManager : MonoBehaviour
@@ -11,6 +11,7 @@ public class EquipmentManager : MonoBehaviour
     [Header("Cup visuals (inactive by default)")]
     public GameObject strawVisual;                  // Child on the cup
     public GameObject bucketHandleVisual;           // Child on the cup
+    public GameObject jetPackVisual;           		// Child on the cup
 
     [Header("Equipment Properties")]
     public EquipmentType CurrentType { get; private set; } = EquipmentType.None;
@@ -23,17 +24,19 @@ public class EquipmentManager : MonoBehaviour
 
     void Awake()
     {
-        if (!cup) cup = GetComponentInChildren<CupController>();
-        SetVisuals(false, false);
+        this.cup ??= GetComponentInChildren<CupController>(); //"this" is redundant, but good to have to differentiate between local and object vars. Also null coalescing operator ^.^ 
+        this.SetVisuals(EquipmentType.None);
     }
 
-    private void SetVisuals(bool strawOn, bool handleOn)
+    private void SetVisuals(EquipmentType eqipType)
     {
-        if (strawVisual) strawVisual.SetActive(strawOn);
-        if (bucketHandleVisual) bucketHandleVisual.SetActive(handleOn);
-
+		this.CurrentType = eqipType;	//Avoids us needing to set it and call this function.
+        if (strawVisual) strawVisual.SetActive(eqipType is EquipmentType.Straw);
+        if (bucketHandleVisual) bucketHandleVisual.SetActive(eqipType is EquipmentType.BucketHandle);
+		if (jetPackVisual) jetPackVisual.SetActive(eqipType is EquipmentType.JetPack);
+		
         // Gate squirting on the cup (expects small helper in CupController)
-        if (cup) cup.SetStrawEquipped(strawOn);
+		if (cup) cup.SetStrawEquipped(eqipType is EquipmentType.Straw);
     }
 
     private bool IsZiplining()
@@ -56,16 +59,10 @@ public class EquipmentManager : MonoBehaviour
 
         switch (pickup.type)
         {
-            case EquipmentType.Straw:
-                SetVisuals(true, false);
-                CurrentType = EquipmentType.Straw;
-                break;
-            case EquipmentType.BucketHandle:
-                SetVisuals(false, true);
-                CurrentType = EquipmentType.BucketHandle;
-                break;
-            default:
-                return false;
+            case EquipmentType.Straw: 			SetVisuals(EquipmentType.Straw); 			break;
+            case EquipmentType.BucketHandle: 	SetVisuals(EquipmentType.BucketHandle); 	break;
+            case EquipmentType.JetPack: 		SetVisuals(EquipmentType.JetPack); 	break;
+            default: return false;
         }
 
         currentPickup = pickup;
@@ -82,18 +79,8 @@ public class EquipmentManager : MonoBehaviour
     public bool TryUnequip()
     {
         if (!EquippedOn) return false;
-
-        if (IsZiplining())
-        {
-            Debug.LogWarning("[EquipmentManager] Cannot unequip while ziplining.");
-            return false;
-        }
-
-        if (!cup || !cup.spawnPoint)
-        {
-            Debug.LogWarning("[EquipmentManager] Cup or spawnPoint missing; cannot drop equipment.");
-            return false;
-        }
+        if (IsZiplining())				 { Debug.LogWarning("[EquipmentManager] Cannot unequip while ziplining."); 						return false; }
+        if (!cup || !cup.spawnPoint)	 { Debug.LogWarning("[EquipmentManager] Cup or spawnPoint missing; cannot drop equipment."); 	return false; }
 
         if (currentPickup)
         {
@@ -108,8 +95,7 @@ public class EquipmentManager : MonoBehaviour
         animationManager.Descoop();
 
         currentPickup = null;
-        CurrentType = EquipmentType.None;
-        SetVisuals(false, false);
+        this.SetVisuals(EquipmentType.None);
 
         return true;
     }
