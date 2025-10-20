@@ -21,9 +21,16 @@ namespace StarterAssets
 		public bool cursorInputForLook = true;
 
 		[Header("AnimationManager")]
-    	public AnimationManager animationManager;
+		public AnimationManager animationManager;
 
-		private void Update()
+		private ThirdPersonController controller;
+		private void Awake() 
+		{
+            this.controller = this.GetComponent<ThirdPersonController>();
+		}
+
+
+		private void Update() 
 		{
 			HandleJumpAnimation();
 
@@ -32,18 +39,17 @@ namespace StarterAssets
 
 			float speed = new Vector2(horizontal, vertical).magnitude;
 
-			if (animationManager != null)
+			if (this.controller.Grounded && animationManager != null) 
 			{
 				animationManager.Walk(speed);
-			}
-			else
-			{
+			} else {
 				Debug.LogWarning("AnimationManager reference is missing in StarterAssetsInputs.");
 			}
 		}
 
-		private void HandleJumpAnimation(){
-			if (jump && animationManager != null)
+		private void HandleJumpAnimation()
+		{
+			if (this.controller.Grounded is false && animationManager != null)
 			{
 				// When jumping, set speed to 0 so we don't walk in mid air .-.
 				animationManager.Walk(0f);
