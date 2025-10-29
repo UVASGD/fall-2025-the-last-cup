@@ -107,6 +107,7 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private CupController cupController;
+        private HeightZone currentZone;
 
         private const float _threshold = 0.01f;
 
@@ -394,23 +395,36 @@ namespace StarterAssets
 
         private void OnTriggerEnter(Collider other)
         {
-            _verticalVelocity = 5f;
-            terminalVelocity = 0f;
+
+            Debug.Log(other.gameObject.tag);
 
             cupController = GetComponent<CupController>();
-
-            if (cupController != null)
-            {
+            if (other.gameObject.tag == "FanAir") {
                 Debug.Log("Holding " + cupController.HeldType);
-            }
+                //Debug.Log(other.gameObject.FallObject);
+                currentZone = other.GetComponent<HeightZone>();
+                //Debug.Log(zone.FallObject);
 
+                
+                if (cupController.HeldType != currentZone.FallObject)
+                {
+                    _verticalVelocity = 5f;
+                    terminalVelocity = 0f;
+                }
+            }
         }
 
         private void OnTriggerExit(Collider other)
         {
             Debug.Log("leaving");
-            _verticalVelocity = 5f;
-            terminalVelocity = 53f;
+
+            if (other.gameObject.tag == "FanAir") {
+                if (cupController.HeldType != currentZone.FallObject)
+                {
+                    _verticalVelocity = 5f;
+                    terminalVelocity = 53f;
+                }
+            }
         }
     }
 }
