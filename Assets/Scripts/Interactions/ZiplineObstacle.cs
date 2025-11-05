@@ -10,6 +10,8 @@ public class ZiplineObstacle : MonoBehaviour
     [Tooltip("Respawn collider (should be slightly larger than visual)")]
     [SerializeField] private Collider respawnCollider;
 
+    private BirdAnimationManager animationManager;
+
     private Vector3 _startPos;
     private Vector3 _endPos;
     private Vector3 _direction;
@@ -35,6 +37,13 @@ public class ZiplineObstacle : MonoBehaviour
         {
             respawnCollider = GetComponentInChildren<Collider>();
         }
+
+        // animationManager = FindAnyObjectByType<BirdAnimationManager>();
+        Debug.Log("animation manager: ", animationManager);
+        if (animationManager != null)
+        {
+            animationManager.Fly(true);
+        }
     }
 
     private void Update()
@@ -46,6 +55,11 @@ public class ZiplineObstacle : MonoBehaviour
 
         if (_t >= 1f)
         {
+            if (animationManager != null)
+            {
+                animationManager.Fly(false);
+            }
+
             Destroy(gameObject);
             return;
         }

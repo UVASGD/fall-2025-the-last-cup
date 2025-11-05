@@ -700,6 +700,7 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
+  animationManager: {fileID: 0}
 --- !u!114 &2958942853775824639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -776,7 +777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileConfig: {fileID: 0}
-  ConsumesWater: 0
+  ConsumesWater: 1
   currentWater: 0
 --- !u!114 &1044206370189926961
 MonoBehaviour:
