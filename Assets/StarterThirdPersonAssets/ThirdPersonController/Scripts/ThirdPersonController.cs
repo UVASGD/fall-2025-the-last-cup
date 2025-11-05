@@ -107,7 +107,10 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private CupController cupController;
+        private HeightZone lastZone;
         private HeightZone currentZone;
+        private bool flyingState = false;
+        private bool lastFlying = false;
 
         private const float _threshold = 0.01f;
 
@@ -162,6 +165,16 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
+
+            if(flyingState)
+            {
+                _verticalVelocity = 5f;
+                terminalVelocity = 0f;
+            } else
+            {
+                terminalVelocity = 53f;
+            }
+
             Move();
         }
 
@@ -395,21 +408,14 @@ namespace StarterAssets
 
         private void OnTriggerEnter(Collider other)
         {
-
-            Debug.Log(other.gameObject.tag);
-
-            cupController = GetComponent<CupController>();
             if (other.gameObject.tag == "FanAir") {
-                Debug.Log("Holding " + cupController.HeldType);
-                //Debug.Log(other.gameObject.FallObject);
                 currentZone = other.GetComponent<HeightZone>();
-                //Debug.Log(zone.FallObject);
-
-                
-                if (cupController.HeldType != currentZone.FallObject)
+                cupController = GetComponent<CupController>();
+                Debug.Log("Holding " + cupController.HeldType);
+                if (!currentZone.FallObject.Contains(cupController.HeldType))
                 {
-                    _verticalVelocity = 5f;
-                    terminalVelocity = 0f;
+                    lastFlying = flyingState;
+                    flyingState = true;
                 }
             }
         }
@@ -419,10 +425,12 @@ namespace StarterAssets
             Debug.Log("leaving");
 
             if (other.gameObject.tag == "FanAir") {
-                if (cupController.HeldType != currentZone.FallObject)
+                if (flyingState && lastFlying) {
+                    lastFlying = false;
+                } else 
                 {
-                    _verticalVelocity = 5f;
-                    terminalVelocity = 53f;
+                    flyingState = false;
+                    lastFlying = false;
                 }
             }
         }

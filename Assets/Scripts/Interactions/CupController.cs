@@ -149,6 +149,8 @@ public class CupController : MonoBehaviour
         IsFull = false;
         heldObject = null;
         heldMaterial = null;
+
+        heldType = ScoopableObject.ScoopType.None;
     }
 
     // Protected accessors for derived classes

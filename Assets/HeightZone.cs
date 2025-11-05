@@ -1,19 +1,21 @@
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 public class HeightZone : MonoBehaviour
 {
-    [SerializeField] public ScoopableObject.ScoopType fallObjects;
-    public ScoopableObject.ScoopType FallObject => fallObjects;
+    /*[SerializeField] public List<ScoopableObject.ScoopType> fallObjects = new();
+    public List<ScoopableObject.ScoopType> FallObject => fallObjects;*/
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Serializable]
+    public struct PreloadItem
     {
-        
+        public ScoopableObject.ScoopType type;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [Header("objects that will cause the cup to fall in this zone")]
+
+    public List<ScoopableObject.ScoopType> fallObjects = new();
+    public List<ScoopableObject.ScoopType> FallObject => fallObjects;
+
 }
