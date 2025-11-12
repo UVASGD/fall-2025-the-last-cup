@@ -411,7 +411,6 @@ namespace StarterAssets
             if (other.gameObject.tag == "FanAir") {
                 currentZone = other.GetComponent<HeightZone>();
                 cupController = GetComponent<CupController>();
-                Debug.Log("Holding " + cupController.HeldType);
                 if (!currentZone.FallObject.Contains(cupController.HeldType))
                 {
                     lastFlying = flyingState;
@@ -422,8 +421,6 @@ namespace StarterAssets
 
         private void OnTriggerExit(Collider other)
         {
-            Debug.Log("leaving");
-
             if (other.gameObject.tag == "FanAir") {
                 if (flyingState && lastFlying) {
                     lastFlying = false;
