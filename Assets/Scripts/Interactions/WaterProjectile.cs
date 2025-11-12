@@ -9,6 +9,7 @@ public class WaterProjectile : MonoBehaviour
     public float life = 3f;
 
     private Collider myCol;
+    private Rigidbody myRid;
     private readonly List<(Collider a, Collider b)> ignoredPairs = new();
     private float timer;
 
@@ -24,8 +25,8 @@ public class WaterProjectile : MonoBehaviour
             myCol = GetComponent<Collider>();
             myCol.isTrigger = true;
 
-            var rb = GetComponent<Rigidbody>();
-            rb.useGravity = true;
+            myRid = GetComponent<Rigidbody>();
+            myRid.useGravity = true;
         }
     }
 
@@ -49,9 +50,18 @@ public class WaterProjectile : MonoBehaviour
     }
 
     void Update()
-    {
-        timer += Time.deltaTime;
-        if (timer >= life) Destroy(gameObject);
+	{
+		//If it has velocity, make cylinder rotate with the arc.
+		if (this.myRid.linearVelocity.sqrMagnitude > 1f) 
+		{
+			this.transform.up = this.myRid.linearVelocity.normalized;	
+		}
+		
+		
+		
+		timer += Time.deltaTime;
+		if (timer >= life) Destroy(gameObject);
+		
     }
 
     void OnTriggerEnter(Collider other)

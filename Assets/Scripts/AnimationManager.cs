@@ -6,6 +6,18 @@ public class AnimationManager : MonoBehaviour
     [SerializeField]
     public Animator animator;
 
+    public void Walk(float Speed)
+    {
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator not assigned in AnimationManager!");
+            return;
+        }
+
+        Speed = Mathf.Clamp01(Speed);
+        animator.SetFloat("Speed", Speed);
+    }
+
     public void Spin()
     {
         if (animator)

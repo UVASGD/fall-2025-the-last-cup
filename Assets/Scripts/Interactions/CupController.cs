@@ -1,160 +1,144 @@
-﻿using UnityEngine;
+﻿using StarterAssets;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using System;
 
-public class CupController : MonoBehaviour
-{
-    [Header("Cup Components")]
-    public SkinnedMeshRenderer cupBodyRenderer;
-    public Material defaultMaterial;
-    public Transform spawnPoint;
-    public GameObject dirtCupPrefab;
+public class CupController : MonoBehaviour {
+	[Header("Cup Components")]
+	public SkinnedMeshRenderer cupBodyRenderer;
 
-    [Header("Cup Properties")]
-    public float cooldownDuration = 0.2f;
+	public ThirdPersonController movementController;
+	public EquipmentManager equipmentManager;
+	public Material defaultMaterial;
+	public Transform spawnPoint;
+	public GameObject dirtCupPrefab;
 
-    [Header("Equipment State")]
-    [SerializeField] private bool _hasStraw = false;
+	[Header("Cup Properties")]
+	public float cooldownDuration = 0.2f;
 
-    [Header("AnimationManager")]
-    public AnimationManager animationManager;
+	[Header("Equipment State")]
+	[SerializeField] private bool _hasStraw = false;
 
-    // Cup state properties
-    public bool IsFull { get; private set; }
-    public bool IsInCooldown => cooldownTimer > 0f;
-    public bool HasStraw => _hasStraw;
+	[Header("AnimationManager")]
+	public AnimationManager animationManager;
 
-    // Private fields
-    private ScoopableObject.ScoopType heldType;
-    private Material heldMaterial;
-    private GameObject heldObject;
-    private float cooldownTimer = 0f;
+	// Cup state properties
+	public bool IsFull { get; private set; }
+	public bool IsInCooldown => cooldownTimer > 0f;
+	public bool HasStraw => _hasStraw;
 
-    protected virtual void Awake()
-    {
-        // Base initialization
-    }
+	// Private fields
+	private ScoopableObject.ScoopType heldType;
+	private Material heldMaterial;
+	private GameObject heldObject;
+	private float cooldownTimer = 0f;
 
-    protected virtual void Update()
-    {
-        // Handle pause menu
-        if (Time.timeScale == 0f) return;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        // Update cooldown
-        if (cooldownTimer > 0f)
-            cooldownTimer -= Time.deltaTime;
+	//public event
 
-        // Handle base interactions
-        if (Input.GetMouseButtonDown(0) && IsFull && !IsInCooldown)
-            TryDescoop();
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            animationManager.Spin();
-        }
-    }
+	// public event Action<ScoopableObject.ScoopType, GameObject> OnScoop;
 
-    public virtual void SetStrawEquipped(bool on)
-    {
-        _hasStraw = on;
-    }
 
-    public virtual void Scoop(ScoopableObject.ScoopType type, Material mat, GameObject sourceObject)
-    {
-        heldType = type;
-        heldMaterial = mat;
-        heldObject = (type == ScoopableObject.ScoopType.Object || type == ScoopableObject.ScoopType.DirtCup) ? sourceObject : null;
 
-        var mats = cupBodyRenderer.materials;
-        if (mats.Length > 1)
-        {
-            mats[1] = mat;
-            cupBodyRenderer.materials = mats;
-        }
 
-        if (type != ScoopableObject.ScoopType.PouringWater && IsFull == false)
-        {
-            animationManager.Scoop();
-        }
 
-        if (heldObject != null)
-        {
-            heldObject.SetActive(false);
-        }
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        IsFull = true;
-        cooldownTimer = cooldownDuration;
-    }
+	protected virtual void Update() {
+		// Handle pause menu
+		if (Time.timeScale == 0f) return;
+		if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
-    protected virtual void TryDescoop()
-    {
-        Ray ray = new Ray(transform.position, transform.forward);
-        if (Physics.Raycast(ray, out var hit, 3f))
-        {
-            var container = hit.collider.GetComponent<Container>();
-            if (container != null && heldType != ScoopableObject.ScoopType.Object)
-            {
-                if (container.TryAdd(heldType, heldMaterial))
-                {
-                    if (IsFull)
-                    {
-                        animationManager.Descoop();
-                        EmptyCup();
-                    }
-                    cooldownTimer = cooldownDuration;
-                    return;
-                }
-            }
-        }
+		// Update cooldown
+		if (IsInCooldown) cooldownTimer -= Time.deltaTime;
+		//this.animationManager.Walk(this.movementController.CurrentVelocity.magnitude);
+		// Handle base interactions
+		if (Input.GetMouseButtonDown(0) && IsFull && !IsInCooldown)
+			TryDescoop();
+		else if (Input.GetKeyDown(KeyCode.R)) {
+			animationManager.Spin();
+		}
+	}
 
-        // Handle object descooping
-        if (heldType == ScoopableObject.ScoopType.Object || heldType == ScoopableObject.ScoopType.DirtCup)
-        {
-            if (heldObject != null)
-            {
-                heldObject.transform.position = spawnPoint.position;
-                heldObject.SetActive(true);
-            }
-            else if (dirtCupPrefab != null)
-            {
-                GameObject spawned = GameObject.Instantiate(dirtCupPrefab);
-                spawned.transform.position = spawnPoint.position;
-            }
-        }
-        else if (heldType == ScoopableObject.ScoopType.Dirt)
-        {
-            if (dirtCupPrefab != null)
-            {
-                GameObject spawned = GameObject.Instantiate(dirtCupPrefab);
-                spawned.transform.position = spawnPoint.position;
-            }
-        }
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	public virtual void SetStrawEquipped(bool on) {
+		_hasStraw = on;
+	}
 
-        if (IsFull)
-        {
-            animationManager.Descoop();
-            EmptyCup();
-        }
-        cooldownTimer = cooldownDuration;
-    }
+	public virtual void Scoop(ScoopableObject.ScoopType type, Material mat, GameObject sourceObject) {
+		heldType = type;
+		heldMaterial = mat;
+		heldObject = (type == ScoopableObject.ScoopType.Object || type == ScoopableObject.ScoopType.DirtCup) ? sourceObject : null;
 
-    public void EmptyCup()
-    {
-        var mats = cupBodyRenderer.materials;
-        if (mats.Length > 1)
-        {
-            mats[1] = defaultMaterial;
-            cupBodyRenderer.materials = mats;
-        }
+		this.SetMatieral(mat);
 
-        IsFull = false;
-        heldObject = null;
-        heldMaterial = null;
+		if (type != ScoopableObject.ScoopType.PouringWater && IsFull == false) {
+			animationManager.Scoop();
+		}
+		if (heldObject != null) heldObject.SetActive(false);
 
-        heldType = ScoopableObject.ScoopType.None;
-    }
+		IsFull = true;
+		cooldownTimer = cooldownDuration;
+	}
 
-    // Protected accessors for derived classes
-    public ScoopableObject.ScoopType HeldType => heldType;
-    protected Material HeldMaterial => heldMaterial;
-    protected GameObject HeldObject => heldObject;
+	protected virtual void TryDescoop() {
+		//Handles descooping into a container
+		if (IsFull && heldType is not ScoopableObject.ScoopType.Object) {
+			if (Physics.Raycast(transform.position, transform.forward, out var hit, 3f)) {
+				if (hit.collider.TryGetComponent<Container>(out var container)) {
+					if (container.TryAdd(heldType, heldMaterial)) {
+						animationManager.Descoop();
+						EmptyCup();
+						cooldownTimer = cooldownDuration;
+						return;
+					}
+				}
+			}
+		}
+
+		// Handle object descooping
+		if (heldType is ScoopableObject.ScoopType.Object && heldObject != null) {
+			heldObject.transform.position = spawnPoint.position;
+			heldObject.SetActive(true);
+		} else if (heldType is ScoopableObject.ScoopType.Dirt || heldType is ScoopableObject.ScoopType.DirtCup) {
+			if (dirtCupPrefab != null) {
+				GameObject.Instantiate(dirtCupPrefab).transform.position = spawnPoint.position;
+			}
+		} else {
+			//If we think there should be an object but its null, make dirt to still have something spawn.
+			if (heldType is ScoopableObject.ScoopType.Object) {
+				if (dirtCupPrefab != null) {
+					GameObject.Instantiate(dirtCupPrefab).transform.position = spawnPoint.position;
+				}
+			}
+		}
+
+		if (IsFull) {
+			animationManager.Descoop();
+			EmptyCup();
+		}
+		cooldownTimer = cooldownDuration;
+	}
+
+	public void EmptyCup() {
+		this.SetMatieral(defaultMaterial);
+
+		IsFull = false;
+		heldObject = null;
+		heldMaterial = null;
+	}
+
+	// Protected accessors for derived classes
+	public ScoopableObject.ScoopType HeldType => heldType;
+	protected Material HeldMaterial => heldMaterial;
+	protected GameObject HeldObject => heldObject;
+
+	private void SetMatieral(Material mat) {
+		var mats = cupBodyRenderer.materials;
+		if (mats.Length > 1) {
+			mats[1] = mat;
+			cupBodyRenderer.materials = mats;
+		}
+	}
 }

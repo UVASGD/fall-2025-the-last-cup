@@ -1,6 +1,11 @@
-﻿ using UnityEngine;
-#if ENABLE_INPUT_SYSTEM 
+﻿using Cinemachine;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Composites;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -22,7 +27,23 @@ namespace StarterAssets
         public float SprintSpeed = 5.335f;
 
         [Tooltip("Player mouse look sensitivity")]
-        public Vector2 lookSensitivity = new Vector2(1, 1);
+        public Vector2 lookSensitivity = new Vector2(3, 3);
+
+        [Tooltip("Player aim sensitivity")]
+        public Vector2 AimSensitivity = new Vector2(1.5f, 1.5f);
+
+        [Tooltip("Move speed of the character in m/s while aiming")]
+        public float AimSpeed = 1.3333333f;
+
+        [Tooltip("Aim transition time in s")]
+        public float AimTransitionTime = 0.15f;
+
+        public Vector3 AimShoulderOffset = new Vector3(0.4f, -0.1f, 0.5f);
+
+        public Vector3 AimShoulderFullPitchOffset = new Vector3(0.3f, -0.05f, 0.8f);
+
+        public float AimRayOffset = 0.5f;
+
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -37,8 +58,10 @@ namespace StarterAssets
         [Tooltip("The height the player can jump")]
         public float JumpHeight = 1.2f;
 
-        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-        public float Gravity = -15.0f;
+		[Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+		public float Gravity = -15.0f;
+		[Tooltip("If gravity should be applied to the character. Disable to float.")]
+		public bool ApplyGravity = true;
 
         [Space(10)]
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
@@ -64,6 +87,8 @@ namespace StarterAssets
         [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
         public GameObject CinemachineCameraTarget;
 
+        public CinemachineVirtualCamera CinemachineCamData;
+
         [Tooltip("How far in degrees can you move the camera up")]
         public float TopClamp = 70.0f;
 
@@ -77,8 +102,8 @@ namespace StarterAssets
         public bool LockCameraPosition = false;
 
         // cinemachine
-        private float _cinemachineTargetYaw;
-        private float _cinemachineTargetPitch;
+        public float _cinemachineTargetYaw;
+        public float _cinemachineTargetPitch;
 
         // player
         private float _speed;
@@ -87,6 +112,18 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float terminalVelocity = 53f;
+
+        // aim ids
+        [SerializeField]
+        private float _aimTransitionTime = 0.0f;
+        [SerializeField]
+        private bool _isAiming = false;
+        // Has finished transition
+        public bool _isAimingActive = false;
+        private float _targetAim = 0.0f;
+
+        // If currently aiming what is the location that is being aimed at
+        private Vector3 _aimLocation;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -115,6 +152,8 @@ namespace StarterAssets
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
+
+
 
         private bool IsCurrentDeviceMouse
         {
@@ -219,8 +258,10 @@ namespace StarterAssets
                 //Don't multiply mouse input by Time.deltaTime;
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * lookSensitivity.x;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * lookSensitivity.y;
+                Vector2 effectiveSensitivity = _isAimingActive ? AimSensitivity : lookSensitivity;
+
+                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * effectiveSensitivity.x;
+                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * effectiveSensitivity.y;
             }
 
             // clamp our rotations so our values are limited 360 degrees
@@ -231,136 +272,198 @@ namespace StarterAssets
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
                 _cinemachineTargetYaw, 0.0f);
         }
+		public Vector3 CurrentVelocity => this._controller.velocity;
+		private void Move() {
+			_isAiming = Input.GetKey(KeyCode.Mouse1);
 
-        private void Move()
-        {
-            // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			// Handles transition between aiming and not aiming to allow for camera/animation transition
+			if (_isAiming && !_isAimingActive) {
+				_aimTransitionTime += Time.deltaTime;
+				if (_aimTransitionTime >= AimTransitionTime) {
+					_aimTransitionTime = AimTransitionTime;
+					_isAimingActive = true;
+				}
+			} else if (!_isAiming && _isAimingActive) {
+				_aimTransitionTime -= Time.deltaTime;
+				if (_aimTransitionTime <= 0) {
+					_aimTransitionTime = 0;
+					_isAimingActive = false;
+				}
+			}
 
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+			// set target speed based on move speed, sprint speed and if sprint is pressed
 
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+			float targetSpeed;
+			if (_isAimingActive) {
+				targetSpeed = AimSpeed;
+			} else {
+				targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			}
 
-            // a reference to the players current horizontal velocity
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+			Cinemachine3rdPersonFollow personFollow = CinemachineCamData.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
 
-            float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+			// Adjusts camera based on aim state
+			float mid = (BottomClamp + TopClamp) / 2;
+			float midDiff = TopClamp - mid;
+			float pitchScale = (Mathf.Abs(_cinemachineTargetPitch - mid) / midDiff);
+			Vector3 trueOffSet;
+			if (_aimTransitionTime > 0) {
+				trueOffSet = Vector3.Lerp(AimShoulderOffset, AimShoulderFullPitchOffset, pitchScale);
+			} else {
+				trueOffSet = new Vector3(0, 0, 0);
+			}
+			personFollow.CameraSide = Mathf.Lerp(0.5f, 0.5f + trueOffSet.x, _aimTransitionTime / AimTransitionTime);
+			personFollow.ShoulderOffset.y = Mathf.Lerp(0f, 0 + trueOffSet.y, _aimTransitionTime / AimTransitionTime);
+			personFollow.ShoulderOffset.z = Mathf.Lerp(0f, 0 + trueOffSet.z, _aimTransitionTime / AimTransitionTime);
 
-            // accelerate or decelerate to target speed
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
-            {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate);
+			// Raycasts from camera to check where to shoot
+			Vector3 rayHitPoint = new Vector3();
+			if (_aimTransitionTime > 0) {
+				Ray cameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+				Ray trueRay = new Ray(cameraRay.origin + cameraRay.direction * AimRayOffset, cameraRay.direction);
 
-                // round speed to 3 decimal places
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
-            }
-            else
-            {
-                _speed = targetSpeed;
-            }
+				RaycastHit cameraHit;
+				Physics.Raycast(trueRay, out cameraHit);
+				// Checks middle
+				if (cameraHit.collider == null) {
+					rayHitPoint = trueRay.origin + trueRay.direction * 1000;
+				} else {
+					rayHitPoint = cameraHit.point;
+				}
+			}
 
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
+			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
-            // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+			// if there is no input, set the target speed to 0
+			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
-            {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
+			// a reference to the players current horizontal velocity
+			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
-                // rotate to face input direction relative to camera position
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-            }
+			float speedOffset = 0.1f;
+			float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+
+			// accelerate or decelerate to target speed
+			if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+				currentHorizontalSpeed > targetSpeed + speedOffset) {
+				// creates curved result rather than a linear one giving a more organic speed change
+				// note T in Lerp is clamped, so we don't need to clamp our speed
+				_speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+					Time.deltaTime * SpeedChangeRate);
+
+				// round speed to 3 decimal places
+				_speed = Mathf.Round(_speed * 1000f) / 1000f;
+			} else {
+				_speed = targetSpeed;
+			}
+
+			_animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+			if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+			// normalise input direction
+			Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+			// if there is a move input rotate player when the player is moving
+			if (_input.move != Vector2.zero || _aimTransitionTime > 0) {
+				_targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+					_mainCamera.transform.eulerAngles.y;
+				float rotation;
+
+				// Alters rotation based off of aim transition state
+				if (_aimTransitionTime <= 0) {
+					rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+				} else {
+					Vector3 rayDiff = rayHitPoint - gameObject.transform.position;
+					float resultRot = Mathf.Atan2(rayDiff.x, rayDiff.z) * Mathf.Rad2Deg;
+					rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, resultRot, ref _rotationVelocity, RotationSmoothTime / 3);
+				}
+
+				// rotate to face input direction relative to camera position
+				transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+			}
 
 
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+			Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // move the player
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			// move the player
+			_controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+							 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-            }
-        }
+			// update animator if using character
+			if (_hasAnimator) {
+				_animator.SetFloat(_animIDSpeed, _animationBlend);
+				_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+			}
+		}
 
+
+
+
+
+
+
+
+		//This is used to implement flying from the jetpack.
+		public void SetVerticalVelocity(float newVelocity) => this._verticalVelocity = newVelocity;
         private void JumpAndGravity()
         {
-            if (Grounded)
-            {
-                // reset the fall timeout timer
-                _fallTimeoutDelta = FallTimeout;
+			if (Grounded) {
+				// reset the fall timeout timer
+				_fallTimeoutDelta = FallTimeout;
 
-                // update animator if using character
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDJump, false);
-                    _animator.SetBool(_animIDFreeFall, false);
-                }
+				// update animator if using character
+				if (_hasAnimator) {
+					_animator.SetBool(_animIDJump, false);
+					_animator.SetBool(_animIDFreeFall, false);
+				}
 
-                // stop our velocity dropping infinitely when grounded
-                if (_verticalVelocity < 0.0f)
-                {
-                    _verticalVelocity = -2f;
-                }
+				// stop our velocity dropping infinitely when grounded
+				if (_verticalVelocity < 0.0f) {
+					_verticalVelocity = -2f;
+				}
 
-                // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-                {
-                    // the square root of H * -2 * G = how much velocity needed to reach desired height
-                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+				// Jump
+				if (_input.jump && _jumpTimeoutDelta <= 0.0f) {
+					// the square root of H * -2 * G = how much velocity needed to reach desired height
+					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
 
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDJump, true);
-                    }
-                }
+					// update animator if using character
+					if (_hasAnimator) {
+						_animator.SetBool(_animIDJump, true);
+					}
+				}
 
-                // jump timeout
-                if (_jumpTimeoutDelta >= 0.0f)
-                {
-                    _jumpTimeoutDelta -= Time.deltaTime;
-                }
-            }
-            else
-            {
-                // reset the jump timeout timer
-                _jumpTimeoutDelta = JumpTimeout;
+				// jump timeout
+				if (_jumpTimeoutDelta >= 0.0f) {
+					_jumpTimeoutDelta -= Time.deltaTime;
+				}
+			} else {
+				// reset the jump timeout timer
+				_jumpTimeoutDelta = JumpTimeout;
 
-                // fall timeout
-                if (_fallTimeoutDelta >= 0.0f)
-                {
-                    _fallTimeoutDelta -= Time.deltaTime;
-                }
-                else
-                {
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDFreeFall, true);
-                    }
-                }
+				// fall timeout
+				if (_fallTimeoutDelta >= 0.0f) {
+					_fallTimeoutDelta -= Time.deltaTime;
+				} else {
+					// update animator if using character
+					if (_hasAnimator) {
+						_animator.SetBool(_animIDFreeFall, true);
+					}
+				}
 
-                // if we are not grounded, do not jump
-                _input.jump = false;
-            }
+				// if we are not grounded, do not jump
+				_input.jump = false;
+			}
+
+			if (ApplyGravity || _verticalVelocity > 0f) {
+				// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+				if (_verticalVelocity < _terminalVelocity) {
+					_verticalVelocity += Gravity * Time.deltaTime;
+				}
+			} else _verticalVelocity = 0f;
+
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
             if (_verticalVelocity < terminalVelocity)
@@ -369,12 +472,27 @@ namespace StarterAssets
             }
         }
 
-        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-        {
-            if (lfAngle < -360f) lfAngle += 360f;
-            if (lfAngle > 360f) lfAngle -= 360f;
-            return Mathf.Clamp(lfAngle, lfMin, lfMax);
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		private static float ClampAngle(float lfAngle, float lfMin, float lfMax) {
+			if (lfAngle < -360f) lfAngle += 360f;
+			if (lfAngle > 360f) lfAngle -= 360f;
+			return Mathf.Clamp(lfAngle, lfMin, lfMax);
+		}
 
         private void OnDrawGizmosSelected()
         {
