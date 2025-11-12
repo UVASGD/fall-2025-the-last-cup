@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ScoopableObject : MonoBehaviour, IInteractable
 {
-    public enum ScoopType { Dirt, Water, PouringWater, Object, Container, DirtCup }
+    public enum ScoopType { Dirt, Water, PouringWater, Object, Container, DirtCup, None }
     public ScoopType interactionType;
     public Material objectMaterial;
 
