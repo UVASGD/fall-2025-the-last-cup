@@ -124,7 +124,7 @@ public class CupController : MonoBehaviour {
 	public void EmptyCup() {
 		this.SetMatieral(defaultMaterial);
 
-        HeldType = ScoopableObject.ScoopType.None;
+        heldType = ScoopableObject.ScoopType.None;
 
 		IsFull = false;
 		heldObject = null;

@@ -459,7 +459,7 @@ namespace StarterAssets
 
 			if (ApplyGravity || _verticalVelocity > 0f) {
 				// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-				if (_verticalVelocity < _terminalVelocity) {
+				if (_verticalVelocity < terminalVelocity) {
 					_verticalVelocity += Gravity * Time.deltaTime;
 				}
 			} else _verticalVelocity = 0f;
