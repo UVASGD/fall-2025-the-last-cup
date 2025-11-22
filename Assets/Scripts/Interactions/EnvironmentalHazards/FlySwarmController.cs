@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+
 public class FlySwarmController : SwarmController
 {
     [Header("Location Control")]
@@ -11,7 +11,6 @@ public class FlySwarmController : SwarmController
 
     private int currentLocationIndex = 0;
     private bool isMoving = false;
-    private Coroutine moveCoroutine;
     private Collider swarmCollider;
 
     private void Awake()
@@ -34,6 +33,7 @@ public class FlySwarmController : SwarmController
             swarmCollider.isTrigger = true;
         }
     }
+
 
     private void Start()
     {
@@ -117,6 +117,8 @@ public class FlySwarmController : SwarmController
 
     private void OnTriggerEnter(Collider other)
     {
+        if (isMoving) return;
+
         WaterProjectile waterProjectile = other.GetComponent<WaterProjectile>();
         if (waterProjectile != null)
         {
@@ -135,10 +137,7 @@ public class FlySwarmController : SwarmController
             return;
         }
 
-        if (moveCoroutine != null)
-        {
-            StopCoroutine(moveCoroutine);
-        }
+        isMoving = true;
 
         currentLocationIndex++;
         if (currentLocationIndex >= locations.Count)
@@ -147,12 +146,11 @@ public class FlySwarmController : SwarmController
         }
 
         Vector3 targetLocation = locations[currentLocationIndex].transform.position;
-        moveCoroutine = StartCoroutine(TransitionToLocation(targetLocation));
+        StartCoroutine(TransitionToLocation(targetLocation));
     }
 
     private IEnumerator TransitionToLocation(Vector3 targetPosition)
     {
-        isMoving = true;
         Vector3 startPosition = transform.position;
         float elapsed = 0f;
 
@@ -173,21 +171,10 @@ public class FlySwarmController : SwarmController
         swarmCenter = targetPosition;
 
         isMoving = false;
-        moveCoroutine = null;
 
         Debug.Log($"Swarm arrived at location {currentLocationIndex}");
     }
 
-    /*
-    protected new Vector3 GetRandomPositionInBounds()
-    {
-        return new Vector3(
-            Random.Range(-swarmSize.x / 2, swarmSize.x / 2),
-            Random.Range(-swarmSize.y / 2, swarmSize.y / 2),
-            Random.Range(-swarmSize.z / 2, swarmSize.z / 2)
-        );
-    }
-    */
     protected new Vector3 GetRandomPositionInBounds()
     {
         float radius = Mathf.Min(swarmSize.x, swarmSize.y, swarmSize.z) / 2f;
@@ -215,6 +202,9 @@ public class FlySwarmController : SwarmController
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(center, swarmSize);
 
+        Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
+        Gizmos.DrawWireCube(center + Vector3.up * swarmSize.y / 4f, new Vector3(swarmSize.x, swarmSize.y / 2f, swarmSize.z));
+
         if (locations != null && locations.Count > 0)
         {
             for (int i = 0; i < locations.Count; i++)
@@ -226,6 +216,9 @@ public class FlySwarmController : SwarmController
 
                     Gizmos.color = Color.yellow;
                     Gizmos.DrawWireCube(locations[i].transform.position, swarmSize);
+
+                    Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
+                    Gizmos.DrawWireCube(locations[i].transform.position + Vector3.up * swarmSize.y / 4f, new Vector3(swarmSize.x, swarmSize.y / 2f, swarmSize.z));
 
                     if (i < locations.Count - 1 && locations[i + 1] != null)
                     {
