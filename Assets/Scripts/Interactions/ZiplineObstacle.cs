@@ -38,7 +38,6 @@ public class ZiplineObstacle : MonoBehaviour
             respawnCollider = GetComponentInChildren<Collider>();
         }
 
-        // animationManager = FindAnyObjectByType<BirdAnimationManager>();
         Debug.Log("animation manager: ", animationManager);
         if (animationManager != null)
         {
