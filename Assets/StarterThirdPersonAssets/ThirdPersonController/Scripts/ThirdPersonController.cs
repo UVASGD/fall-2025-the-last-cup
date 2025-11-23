@@ -111,7 +111,7 @@ namespace StarterAssets
         private float _targetRotation = 0.0f;
         private float _rotationVelocity;
         private float _verticalVelocity;
-        private float _terminalVelocity = 53.0f;
+        private float terminalVelocity = 53f;
 
         // aim ids
         [SerializeField]
@@ -143,6 +143,11 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private CupController cupController;
+        private HeightZone lastZone;
+        private HeightZone currentZone;
+        private bool flyingState = false;
+        private bool lastFlying = false;
 
         private const float _threshold = 0.01f;
 
@@ -199,6 +204,16 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
+
+            if(flyingState)
+            {
+                _verticalVelocity = 5f;
+                terminalVelocity = 0f;
+            } else
+            {
+                terminalVelocity = 53f;
+            }
+
             Move();
         }
 
@@ -450,6 +465,11 @@ namespace StarterAssets
 			} else _verticalVelocity = 0f;
 
 
+            // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+            if (_verticalVelocity < terminalVelocity)
+            {
+                _verticalVelocity += Gravity * Time.deltaTime;
+            }
         }
 
 
@@ -501,6 +521,32 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f && _audioManager != null)
             {
                 _audioManager.PlayLanding(transform.TransformPoint(_controller.center));
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.tag == "FanAir") {
+                currentZone = other.GetComponent<HeightZone>();
+                cupController = GetComponent<CupController>();
+                if (!currentZone.FallObject.Contains(cupController.HeldType))
+                {
+                    lastFlying = flyingState;
+                    flyingState = true;
+                }
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.tag == "FanAir") {
+                if (flyingState && lastFlying) {
+                    lastFlying = false;
+                } else 
+                {
+                    flyingState = false;
+                    lastFlying = false;
+                }
             }
         }
     }

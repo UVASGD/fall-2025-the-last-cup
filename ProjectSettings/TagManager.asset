@@ -11,6 +11,7 @@ TagManager:
   - Enemy
   - Interactable
   - Zipline
+  - FanAir
   - Pipe
   layers:
   - Default
