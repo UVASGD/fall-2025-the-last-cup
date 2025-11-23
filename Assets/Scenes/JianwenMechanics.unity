@@ -16111,7 +16111,6 @@ MonoBehaviour:
   numPipesFound: 0
   totalPipesNeeded: 4
   exitDoor: {fileID: 483065030}
-  doorOpenSpeed: 15
   sprinklerParticles:
   - {fileID: 1835920862}
   fires: []
