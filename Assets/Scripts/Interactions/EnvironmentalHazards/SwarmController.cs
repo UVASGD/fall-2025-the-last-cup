@@ -5,7 +5,7 @@ public class SwarmController : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] protected GameObject prefab;
-    [SerializeField] protected int maxAmount = 20;
+    [SerializeField] protected int maxAmount = 10;
 
     [Header("Swarm Bounds")]
     protected Vector3 swarmCenter;

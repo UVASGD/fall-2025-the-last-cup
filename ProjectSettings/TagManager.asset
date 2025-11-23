@@ -11,6 +11,7 @@ TagManager:
   - Enemy
   - Interactable
   - Zipline
+  - Pipe
   layers:
   - Default
   - TransparentFX

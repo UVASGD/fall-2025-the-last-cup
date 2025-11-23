@@ -73,6 +73,7 @@ public class BirdController : MonoBehaviour
 
             if (birdAnimationManager != null)
             {
+                birdAnimationManager.Ruffle();
                 birdAnimationManager.Fly(true);
             }
 
