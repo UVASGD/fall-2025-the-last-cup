@@ -3,7 +3,182 @@ guid: 9bb830c46cd784c17a35191f4979382a
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.003
+    second: {fileID: 2100000, guid: 469d67d7aa80a46d890f07901fca795b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: awning_red
+    second: {fileID: 2100000, guid: bd3a46c7f18004bfb99040a182ff8ad3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: awning_white
+    second: {fileID: 2100000, guid: d23c907285b4f40f99629c8ffaaf8ebd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brick
+    second: {fileID: 2100000, guid: 0af6931f5068f451f85140ffeb4d333b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brick2
+    second: {fileID: 2100000, guid: c4939635217e14c068bf36fddcf3ef82, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brick3
+    second: {fileID: 2100000, guid: 5e00e0668ac2243caa0b2a3db0514e26, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: brick4
+    second: {fileID: 2100000, guid: 735ea33588ab2456fbf4378a28f01a95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: concrete
+    second: {fileID: 2100000, guid: 7442890783198493c9846c4a9876eec2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: debris
+    second: {fileID: 2100000, guid: 2106972151eba411aa66155f46ba7d33, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dirt
+    second: {fileID: 2100000, guid: 96e4ef4be4ed44ac089fd9f70d43889a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dumpster
+    second: {fileID: 2100000, guid: f4aa0f4afbbbf421db226b84697eb4f7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dumpster_cover
+    second: {fileID: 2100000, guid: 598f8dc17c80948acb3a1dfbcac7c6c9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: factory_rim
+    second: {fileID: 2100000, guid: b111b61936fa347eb9be1e21939f6ea5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fire_escape
+    second: {fileID: 2100000, guid: 296272bfffd93461987c245e1bda096f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: floor_divider2
+    second: {fileID: 2100000, guid: 4affbd7027c8c48f7856e7d038ac134c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: floor_divider_brown
+    second: {fileID: 2100000, guid: 4b625055221744192a254b80474d24d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: floor_divider_white
+    second: {fileID: 2100000, guid: af87d0ea57798413388e6a994c7520ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal_plate
+    second: {fileID: 2100000, guid: b59c7b8a39a3448bc81f606c9f8fe64c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: modern_window
+    second: {fileID: 2100000, guid: a3a017de06fc04a3288d0155547c4378, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pipe_joiner
+    second: {fileID: 2100000, guid: aa729c44948a643ab8d732b215dbf7c8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plant_box
+    second: {fileID: 2100000, guid: e91cc98c00d724517a15653a9a86c171, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: road
+    second: {fileID: 2100000, guid: 281a00cd9754842228672a70b2e8b136, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rusty_metal
+    second: {fileID: 2100000, guid: cc91cdbefdfd046c3a6b72cf47c9e902, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rusty_pipe
+    second: {fileID: 2100000, guid: fb651b003b5f24d82be30c6a44c8984f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: storage_box1
+    second: {fileID: 2100000, guid: 3fd62287576774d9881bcc954fe3ea8b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: storage_box2
+    second: {fileID: 2100000, guid: 5642c6041954b4d3899825d4cad903fc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: storage_box3
+    second: {fileID: 2100000, guid: 88f12c3d3fa1f4e8e8b0f1f74170f504, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: storage_metal
+    second: {fileID: 2100000, guid: f2aa641757fa64e03bbf4f4690b20d2f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: trash
+    second: {fileID: 2100000, guid: ff1fb34181b2b4416bf2b30593b4469a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: water
+    second: {fileID: 2100000, guid: c873a83b04f444c4ba294d1c676ce786, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: window
+    second: {fileID: 2100000, guid: d5ad9fb0019ce4a28ba3a9e02c62c807, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: window_divider_gray
+    second: {fileID: 2100000, guid: 3123ffab0953d4091b091593462813c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: window_liner
+    second: {fileID: 2100000, guid: 8b42a17cccb1e4ba1b8ab3942838edfc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: windowsill
+    second: {fileID: 2100000, guid: 63a741783ea284ff49424b2fc800c3b3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wood
+    second: {fileID: 2100000, guid: 7ab6a01c30b9649c2a51c125c3daf7d0, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -1872,7 +1872,7 @@ Transform:
   m_GameObject: {fileID: 338539220}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.097, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8223,6 +8223,10 @@ PrefabInstance:
       propertyPath: projectileConfig
       value: 
       objectReference: {fileID: 1252124463}
+    - target: {fileID: 4720310507881937721, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b4a6b0daf8fc749c2ba7efb363d120e6, type: 2}
     - target: {fileID: 5014335334898830710, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
       propertyPath: animationManager
       value: 

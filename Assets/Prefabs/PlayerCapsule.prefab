@@ -700,6 +700,7 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
+  animationManager: {fileID: 0}
 --- !u!114 &2958942853775824639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -959,7 +960,7 @@ PrefabInstance:
     - target: {fileID: 2067265143670408927, guid: 606ec4277b7301c47aebecb8920b5d69, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 6547622731792080273, guid: 37c1dee9f3d1f4927beedd4a20a88cdd, type: 3}
+      objectReference: {fileID: 2100000, guid: 01957bca6eaa645c1b4b8c0e1ece3a0b, type: 2}
     - target: {fileID: 2365954155255417741, guid: 606ec4277b7301c47aebecb8920b5d69, type: 3}
       propertyPath: m_Name
       value: cup_character2

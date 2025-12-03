@@ -3,7 +3,62 @@ guid: 37c1dee9f3d1f4927beedd4a20a88cdd
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.007
+    second: {fileID: 2100000, guid: a38079c10417f4e43b63031108a3d7b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.008
+    second: {fileID: 2100000, guid: f0b900db7ebad49e39ef3eac07823dc8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: body.002
+    second: {fileID: 2100000, guid: df8e19490b51946d793bbab30f03fd14, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eye_whites.002
+    second: {fileID: 2100000, guid: 01957bca6eaa645c1b4b8c0e1ece3a0b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fill_material_high.002
+    second: {fileID: 2100000, guid: fa274aa5ebe744cb6aa922ff00f7e9b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fill_material_low.002
+    second: {fileID: 2100000, guid: 4ec92d14efab04513a588c137e71764c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fill_material_medium.002
+    second: {fileID: 2100000, guid: bcddd180ad3524425ac8f9899090cae2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: handle.002
+    second: {fileID: 2100000, guid: 7b61babfe648a4dd5a2642d05852e0b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pupil.002
+    second: {fileID: 2100000, guid: 9aeb671eb89084b6f82472e16af5e171, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: straw.005
+    second: {fileID: 2100000, guid: a0b1dfcf556b048549bc21e1a9336d11, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: straw.006
+    second: {fileID: 2100000, guid: c9a93bd924b6d4a5da32c6d0aa7f1b8b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
