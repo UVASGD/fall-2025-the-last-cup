@@ -21,4 +21,20 @@ public class BirdAnimationManager : MonoBehaviour
             animator.SetBool("flying", flyOrNot);
         }
     }
+
+    public void Ruffle()
+    {
+        if (animator)
+        {
+            animator.SetTrigger("ruffle");
+        }
+    }
+
+    public void Worried()
+    {
+        if (animator)
+        {
+            animator.SetTrigger("worried");
+        }
+    }
 }
