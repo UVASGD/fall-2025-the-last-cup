@@ -544,7 +544,7 @@ MonoBehaviour:
   AimRayOffset: 2
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
-  JumpHeight: 2
+  JumpHeight: 4
   Gravity: -20
   ApplyGravity: 1
   JumpTimeout: 0.2

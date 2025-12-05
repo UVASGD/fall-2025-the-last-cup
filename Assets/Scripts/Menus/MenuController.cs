@@ -1,13 +1,14 @@
-using UnityEngine;
+using StarterAssets;
 using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
-using TMPro;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.Rendering;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuController: MonoBehaviour
 {
@@ -20,34 +21,30 @@ public class MenuController: MonoBehaviour
     private float _musicVolume;
     private float _sfxVolume;
 
-    /*
     [Header("Gameplay Setting")]
     [SerializeField] private Slider mouseSensSlider = null;
-    [SerializeField] private float mouseSensDefault = 5f;
-    [SerializeField] private MouseSensitivityHandler mouseHandler;
-    public float mouseSens = 5f;
-    */
+    [SerializeField] private float mouseSensDefault = 3f;
+    public float mouseSens = 3f;
 
     [Header("Graphics Settings")]
     [SerializeField] private Slider brightnessSlider = null;
     [SerializeField] private TMP_Dropdown qualityDropdown = null;
     [SerializeField] private TMP_Dropdown resolutionDropdown = null;
-    [SerializeField] private Toggle fullscreenToggle = null;
+    // [SerializeField] private Toggle fullscreenToggle = null;
     [SerializeField] private float brightnessDefault = 0.0f;
     [SerializeField] private int qualityDefault = 0;
     [SerializeField] private int resolutionDefault = 0;
-    [SerializeField] private bool isFullscreenDefault = false;
+    // [SerializeField] private bool isFullscreenDefault = false;
     private float _brightnessLevel;
     private int _qualityLevel;
     private int _resolution;
-    private bool _isFullscreen;
+    // private bool _isFullscreen;
     [SerializeField] private Volume postProcessingVolume;
     private ColorAdjustments colorAdjustments;
     private Resolution[] resolutions;
 
     [Header("Confirmation")]
     [SerializeField] private GameObject confirmationPrompt = null;
-
 
     private bool isStartup = true;
 
@@ -132,6 +129,10 @@ public class MenuController: MonoBehaviour
         SetSFXVolume(_sfxVolume);
         sfxVolSlider.value = _sfxVolume;
 
+        mouseSens = PlayerPrefs.GetFloat("sensitivity", mouseSensDefault);
+        SetMouseSensitivity(mouseSens);
+        mouseSensSlider.value = mouseSens;
+
         _brightnessLevel = PlayerPrefs.GetFloat("brightness", brightnessDefault);
         SetBrightness(_brightnessLevel);
         brightnessSlider.value = _brightnessLevel;
@@ -144,9 +145,11 @@ public class MenuController: MonoBehaviour
         SetResolution(_resolution);
         resolutionDropdown.value = _resolution;
 
+        /*
         _isFullscreen = PlayerPrefs.GetInt("isFullscreen", (isFullscreenDefault ? 1 : 0)) == 1;
         SetFullscreen(_isFullscreen);
         fullscreenToggle.isOn = _isFullscreen;
+        */
 
         GraphicsApply();
     }
@@ -160,11 +163,20 @@ public class MenuController: MonoBehaviour
     {
         PlayButtonSound();
 
-        SceneManager.LoadScene(1);
+        CheckPointManager checkpointManager = FindObjectOfType<CheckPointManager>();
+        if (checkpointManager != null)
+        {
+            checkpointManager.PlayFromLastCheckpoint();
+        }
+        else
+        {
+            SceneManager.LoadScene(1);
+        }
 
         AudioManager.audioManagerInstance.StopMusic();
         AudioManager.audioManagerInstance.PlayMusic(AudioManager.audioManagerInstance.menuBackground);
     }
+
 
     public void QuitButton()
     {
@@ -200,33 +212,40 @@ public class MenuController: MonoBehaviour
         PlayerPrefs.SetFloat("sfxVolume", _sfxVolume);
     }
 
-    /*
     public void SetMouseSensitivity(float sensitivity)
     {
         mouseSens = sensitivity;
-        if (mouseHandler != null)
+
+        if (MouseSensitivityHandler.Instance != null)
         {
-            mouseHandler.SetSensitivity(sensitivity);
-            mouseHandler.AdjustSpeed(sensitivity);
+            MouseSensitivityHandler.Instance.SetSensitivity(sensitivity);
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("sensitivity", sensitivity);
+            PlayerPrefs.Save();
         }
     }
+
 
     public void MouseSensitivityApply()
     {
         PlayerPrefs.SetFloat("sensitivity", mouseSens);
+        PlayerPrefs.Save();
     }
-    */
 
     public void SetBrightness(float brightness)
     {
         _brightnessLevel = brightness;
     }
 
+    /*
     public void SetFullscreen(bool isFullScreen)
     {
         if (!isStartup) PlayButtonSound();
         _isFullscreen = isFullScreen;
     }
+    */
 
     public void SetQuality(int qualityIndex)
     {
@@ -258,10 +277,12 @@ public class MenuController: MonoBehaviour
         PlayerPrefs.SetInt("quality", _qualityLevel);
         QualitySettings.SetQualityLevel(_qualityLevel);
 
+        /*
         PlayerPrefs.SetInt("isFullscreen", (_isFullscreen ? 1 : 0));
         Screen.fullScreenMode = _isFullscreen
         ? FullScreenMode.ExclusiveFullScreen
         : FullScreenMode.Windowed;
+        */
 
         PlayerPrefs.SetInt("resolution", _resolution);
         Resolution resolution = resolutions[_resolution];
@@ -306,11 +327,9 @@ public class MenuController: MonoBehaviour
 
     public void ResetButton()
     {
-        /*
         SetMouseSensitivity(mouseSensDefault);
         mouseSensSlider.value = mouseSensDefault;
         MouseSensitivityApply();
-        */
 
         // Debug.Log(brightnessDefault);
         SetBrightness(brightnessDefault);
@@ -322,8 +341,10 @@ public class MenuController: MonoBehaviour
         SetResolution(resolutionDefault);
         resolutionDropdown.value = resolutionDefault;
 
+        /*
         SetFullscreen(isFullscreenDefault);
         fullscreenToggle.isOn = isFullscreenDefault;
+        */
 
         GraphicsApply();
 

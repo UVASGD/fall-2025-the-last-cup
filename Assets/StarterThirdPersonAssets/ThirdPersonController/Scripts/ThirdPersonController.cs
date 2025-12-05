@@ -181,7 +181,15 @@ namespace StarterAssets
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
+            // Load saved mouse sensitivity from PlayerPrefs
+            if (PlayerPrefs.HasKey("sensitivity"))
+            {
+                float savedSensitivity = PlayerPrefs.GetFloat("sensitivity");
+                lookSensitivity = new Vector2(savedSensitivity, savedSensitivity);
+                Debug.Log($"Loaded sensitivity: {savedSensitivity}");
+            }
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();

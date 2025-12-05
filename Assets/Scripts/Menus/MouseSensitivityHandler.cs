@@ -1,57 +1,56 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using StarterAssets;
 
 public class MouseSensitivityHandler : MonoBehaviour
 {
-    [Header("Sensitivity Settings")]
-    public float sensitivity = 5f;
-    public bool invertY = false;
+    public static MouseSensitivityHandler Instance { get; private set; }
 
-    [Header("Camera Control")]
-    [SerializeField] private Transform playerBody;  // Horizontal rotation (Y-axis)
-    [SerializeField] private Transform cameraPivot; // Vertical rotation (X-axis)
+    private const string SENSITIVITY_KEY = "sensitivity";
+    private const float DEFAULT_SENSITIVITY = 5f;
 
-    [Header("Clamping")]
-    public float minY = 0f;
-    public float maxY = 10f;
+    private float currentSensitivity;
 
-    private float xRotation = 0f;
-
-    private void Start()
+    private void Awake()
     {
-        if (SceneManager.GetActiveScene().name != "TitleScreen")
+        if (Instance == null)
         {
-            // Load saved sensitivity or default to 0.5
-            sensitivity = PlayerPrefs.GetFloat("sensitivity", 0.5f);
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            LoadSensitivity();
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 
-    private void Update()
+    private void LoadSensitivity()
     {
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
-
-        if (invertY)
-            mouseY = -mouseY;
-
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, minY, maxY);
-
-        cameraPivot.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        playerBody.Rotate(Vector3.up * mouseX);
+        currentSensitivity = PlayerPrefs.GetFloat(SENSITIVITY_KEY, DEFAULT_SENSITIVITY);
     }
 
     public void SetSensitivity(float newSensitivity)
     {
-        sensitivity = newSensitivity;
-        AdjustSpeed(newSensitivity);
-        PlayerPrefs.SetFloat("sensitivity", newSensitivity);
+        currentSensitivity = newSensitivity;
+        PlayerPrefs.SetFloat(SENSITIVITY_KEY, newSensitivity);
+        PlayerPrefs.Save();
+
+        ApplySensitivityToController();
     }
 
-    public void AdjustSpeed(float newSpeed)
+    public float GetSensitivity()
     {
-        sensitivity = newSpeed * 10f; // Match reference behavior
-        PlayerPrefs.SetFloat("sensitivity", sensitivity);
-        Debug.Log($"[MouseHandler] Adjusted sensitivity to {sensitivity}");
+        return currentSensitivity;
+    }
+
+    public void ApplySensitivityToController()
+    {
+        ThirdPersonController controller = FindAnyObjectByType<ThirdPersonController>();
+
+        if (controller != null)
+        {
+            controller.lookSensitivity = new Vector2(currentSensitivity, currentSensitivity);
+            Debug.Log($"Applied sensitivity {currentSensitivity} to ThirdPersonController");
+        }
     }
 }
