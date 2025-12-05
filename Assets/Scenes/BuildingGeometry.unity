@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195a4bdf7d0789a438de02c0687c3af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpointIndex: 1
 --- !u!65 &56699927
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1326,7 +1327,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 479723139148414925, guid: bd71036de02d7ad4ebfe9da92fca740b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 356.13998
+      value: 357.34
       objectReference: {fileID: 0}
     - target: {fileID: 479723139148414925, guid: bd71036de02d7ad4ebfe9da92fca740b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1389,8 +1390,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8220330686296352223, guid: bd71036de02d7ad4ebfe9da92fca740b, type: 3}
+      propertyPath: CameraSide
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8220330686296352223, guid: bd71036de02d7ad4ebfe9da92fca740b, type: 3}
       propertyPath: CameraDistance
       value: 6.4972534
+      objectReference: {fileID: 0}
+    - target: {fileID: 8220330686296352223, guid: bd71036de02d7ad4ebfe9da92fca740b, type: 3}
+      propertyPath: ShoulderOffset.x
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2015,6 +2024,14 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7026925414343413259, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
+      propertyPath: JumpHeight
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7026925414343413259, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
+      propertyPath: SprintSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7026925414343413259, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
       propertyPath: CinemachineCamData
       value: 
       objectReference: {fileID: 1142054512}
@@ -2093,6 +2110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195a4bdf7d0789a438de02c0687c3af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpointIndex: 1
 --- !u!65 &1412028953
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2403,7 +2421,7 @@ Transform:
   m_GameObject: {fileID: 1919083059}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -56.957253, y: -34.167, z: 356.13998}
+  m_LocalPosition: {x: -56.957253, y: -34.167, z: 357.34}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2489,6 +2507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195a4bdf7d0789a438de02c0687c3af8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpointIndex: 1
 --- !u!65 &2013452234
 BoxCollider:
   m_ObjectHideFlags: 0
