@@ -2970,11 +2970,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -8391222552659086748, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
   m_PrefabInstance: {fileID: 593094214}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &415329809 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -4683669308469848369, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
-  m_PrefabInstance: {fileID: 593094214}
-  m_PrefabAsset: {fileID: 0}
 --- !u!65 &415329811
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2996,27 +2991,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.76000017, y: 1.2942159, z: 0.55604106}
   m_Center: {x: -1.3051746e-10, y: -0.001094848, z: -0.10197938}
---- !u!114 &415329812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 415329807}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcff334bcedd21240a4f539bc4f13efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scrollSpeedX: 0
-  scrollSpeedY: 0.1
-  useDirectionPoints: 0
-  startPoint: {fileID: 2069917786}
-  endPoint: {fileID: 1335874148}
-  directionSpeed: 0.1
-  targetRenderer: {fileID: 415329809}
-  texturePropertyName: _BaseMap
-  useSharedMaterial: 0
 --- !u!1001 &416718899
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4283,7 +4257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.71
+      value: 1.81
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4324,7 +4298,7 @@ PrefabInstance:
     - target: {fileID: -4683669308469848369, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: cd146845c65384108a9efe19765bfa47, type: 2}
+      objectReference: {fileID: 2100000, guid: 0f6b865ebd3e94675a598c4aec4c9aab, type: 2}
     - target: {fileID: 919132149155446097, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
       propertyPath: m_Name
       value: ConveyorBelt
@@ -4355,9 +4329,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8391222552659086748, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
       insertIndex: -1
       addedObject: {fileID: 415329811}
-    - targetCorrespondingSourceObject: {fileID: -8391222552659086748, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 415329812}
     - targetCorrespondingSourceObject: {fileID: -516098083770646512, guid: 9959a43c0e63abc4f84447cb888f5d77, type: 3}
       insertIndex: -1
       addedObject: {fileID: 647065677}
