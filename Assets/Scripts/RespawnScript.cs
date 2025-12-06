@@ -29,6 +29,7 @@ public class RespawnScript : MonoBehaviour
             CharacterController controller = player.GetComponent<CharacterController>();
             if (controller != null)
             {
+                DeathScreen.StartFade();
                 controller.enabled = false;
                 player.transform.position = respawnPoint.transform.position;
                 controller.enabled = true;
