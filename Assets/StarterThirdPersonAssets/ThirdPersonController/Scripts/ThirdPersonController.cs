@@ -153,6 +153,7 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
+        private ConveyorBelt currentConveyorBelt;
 
 
         private bool IsCurrentDeviceMouse
@@ -281,7 +282,18 @@ namespace StarterAssets
                 _cinemachineTargetYaw, 0.0f);
         }
 		public Vector3 CurrentVelocity => this._controller.velocity;
-		private void Move() {
+
+        private Vector3 GetConveyorVelocity()
+        {
+            if (currentConveyorBelt != null && currentConveyorBelt.affectPlayer)
+            {
+                return currentConveyorBelt.ConveyorVelocity * Time.deltaTime;
+            }
+            return Vector3.zero;
+        }
+
+
+        private void Move() {
 			_isAiming = Input.GetKey(KeyCode.Mouse1);
 
 			// Handles transition between aiming and not aiming to allow for camera/animation transition
@@ -393,25 +405,34 @@ namespace StarterAssets
 			}
 
 
-			Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            Vector3 conveyorVelocity = GetConveyorVelocity();
 
-			// move the player
-			_controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-							 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            Vector3 playerMovement = targetDirection.normalized * (_speed * Time.deltaTime);
+            Vector3 verticalMovement = new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
 
-			// update animator if using character
-			if (_hasAnimator) {
+            if (currentConveyorBelt != null && currentConveyorBelt.affectPlayer)
+            {
+                Vector3 conveyorDirection = currentConveyorBelt.ConveyorVelocity.normalized;
+                float playerDotConveyor = Vector3.Dot(playerMovement.normalized, conveyorDirection);
+
+                if (playerDotConveyor > 0.1f)
+                {
+                    Vector3 playerInConveyorDir = Vector3.Project(playerMovement, conveyorDirection);
+                    Vector3 playerPerpendicular = playerMovement - playerInConveyorDir;
+                    playerMovement = playerPerpendicular + Vector3.ClampMagnitude(playerInConveyorDir, conveyorVelocity.magnitude * 0.5f);
+                }
+            }
+
+            _controller.Move(playerMovement + verticalMovement + conveyorVelocity);
+
+
+            // update animator if using character
+            if (_hasAnimator) {
 				_animator.SetFloat(_animIDSpeed, _animationBlend);
 				_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
 			}
 		}
-
-
-
-
-
-
-
 
 		//This is used to implement flying from the jetpack.
 		public void SetVerticalVelocity(float newVelocity) => this._verticalVelocity = newVelocity;
@@ -480,22 +501,6 @@ namespace StarterAssets
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax) {
 			if (lfAngle < -360f) lfAngle += 360f;
 			if (lfAngle > 360f) lfAngle -= 360f;
@@ -534,7 +539,17 @@ namespace StarterAssets
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.tag == "FanAir") {
+            if (other.gameObject.CompareTag("ConveyorBelt"))
+            {
+                ConveyorBelt belt = other.GetComponent<ConveyorBelt>();
+                if (belt != null)
+                {
+                    currentConveyorBelt = belt;
+                }
+            }
+
+            if (other.gameObject.tag == "FanAir")
+            {
                 currentZone = other.GetComponent<HeightZone>();
                 cupController = GetComponent<CupController>();
                 if (!currentZone.FallObject.Contains(cupController.HeldType))
@@ -547,10 +562,21 @@ namespace StarterAssets
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.tag == "FanAir") {
-                if (flyingState && lastFlying) {
+            if (other.gameObject.CompareTag("ConveyorBelt"))
+            {
+                if (currentConveyorBelt != null && other.GetComponent<ConveyorBelt>() == currentConveyorBelt)
+                {
+                    currentConveyorBelt = null;
+                }
+            }
+
+            if (other.gameObject.tag == "FanAir")
+            {
+                if (flyingState && lastFlying)
+                {
                     lastFlying = false;
-                } else 
+                }
+                else
                 {
                     flyingState = false;
                     lastFlying = false;
