@@ -11,8 +11,10 @@ public class JetpackMechanic : MonoBehaviour {
 	private WaterManager waterManager;
 	private float fireTimer = 0f;
 
-	//###################################################################################################
-	void Awake() {
+	private AudioSource jetpackLoopSource;
+
+    //###################################################################################################
+    void Awake() {
 		if (!this.StrictTryGetComponent(out this.cupController)) this.enabled = false;
 		if (!this.StrictTryGetComponent(out this.waterManager)) this.enabled = false;
 
@@ -32,14 +34,21 @@ public class JetpackMechanic : MonoBehaviour {
 	void Update() {
 
 		// Handle continuous squirting
-		if (cupController.equipmentManager.CurrentType is EquipmentType.JetPack && Input.GetKey(KeyCode.Space)) {
+		if (cupController.equipmentManager.CurrentType is EquipmentType.JetPack && Input.GetKey(KeyCode.Space))
+		{
 			this.ProcessSquirting();
+		}
+		else
+		{
+			if (jetpackLoopSource != null) StopJetpack();
 		}
 	}
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	private void ProcessSquirting() {
-		if (this.waterManager.ProcessSquirting() is false) return;
+		if (jetpackLoopSource == null) StartJetpack();
+
+        if (this.waterManager.ProcessSquirting() is false) return;
 		if (this.waterManager.ProcessSquirting() is false) return;
 		if (this.waterManager.ProcessSquirting() is false) return;
 		  // Emit droplets at fire rate
@@ -70,4 +79,20 @@ public class JetpackMechanic : MonoBehaviour {
 			Gizmos.DrawRay(this.rNozzle.position, this.rNozzle.forward * 0.5f);
 		}
 	}
+
+    public void StartJetpack()
+    {
+        if (jetpackLoopSource == null)
+        {
+            jetpackLoopSource = AudioManager.audioManagerInstance.PlayLoopingSFX(
+                AudioManager.audioManagerInstance.jetpack
+            );
+        }
+    }
+
+    public void StopJetpack()
+    {
+        AudioManager.audioManagerInstance.StopLoopingSFX(jetpackLoopSource);
+        jetpackLoopSource = null;
+    }
 }

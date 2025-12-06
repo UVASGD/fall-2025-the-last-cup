@@ -47,6 +47,8 @@ public class RatBehavior : MonoBehaviour
     [SerializeField]
     private float currentStunTime = 0;
 
+    AudioSource mouseLoopingSource;
+
     struct PipeLoc
     {
         public PipeNodes pipe;
@@ -58,6 +60,14 @@ public class RatBehavior : MonoBehaviour
         print("WOW " + collision.gameObject.tag);
         if (collision.gameObject.tag == "WaterProjectile")
         {
+            if (mouseLoopingSource != null)
+            {
+                AudioManager.audioManagerInstance.StopLoopingSFX(mouseLoopingSource);
+                mouseLoopingSource = null;
+            }
+
+            AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.mouseAttacked);
+            
             Shake();
             currentStunTime = stunTime;
         }
@@ -99,6 +109,8 @@ public class RatBehavior : MonoBehaviour
             Destroy(this);
             return;
         }
+
+        mouseLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.mouse);
 
         if (!foundPipes)
         {

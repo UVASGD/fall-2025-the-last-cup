@@ -74,6 +74,8 @@ public class HydraulicPress : MonoBehaviour
 
     private void UpdateMovingDown()
     {
+        AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.hydraulicPress);
+
         float progress = Mathf.Clamp01(currentTime * pressSpeed);
         float smoothProgress = Mathf.SmoothStep(0f, 1f, progress);
 

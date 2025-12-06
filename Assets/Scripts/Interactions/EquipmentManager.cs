@@ -65,6 +65,8 @@ public class EquipmentManager : MonoBehaviour
             default: return false;
         }
 
+        AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.equipment);
+
         currentPickup = pickup;
 
         // Hide world pickup while equipped (no physics changes)
@@ -93,6 +95,8 @@ public class EquipmentManager : MonoBehaviour
 
         // Play descoop animation
         animationManager.Descoop();
+
+        AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.equipment);
 
         currentPickup = null;
         this.SetVisuals(EquipmentType.None);
