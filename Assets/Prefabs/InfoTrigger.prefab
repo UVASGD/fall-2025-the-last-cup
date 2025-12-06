@@ -183,8 +183,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Press R to rotate to move mice from pipe to pipe.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b3c984ae512c7d84b8dee1455d64bb07, type: 2}
-  m_sharedMaterial: {fileID: 1648418652684013438, guid: b3c984ae512c7d84b8dee1455d64bb07, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 40f502f135e204e97acb8e32eb8b2b57, type: 2}
+  m_sharedMaterial: {fileID: 5822542408501729426, guid: 40f502f135e204e97acb8e32eb8b2b57, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
