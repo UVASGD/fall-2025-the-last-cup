@@ -13,6 +13,7 @@ TagManager:
   - Zipline
   - FanAir
   - Pipe
+  - WaterProjectile
   layers:
   - Default
   - TransparentFX
