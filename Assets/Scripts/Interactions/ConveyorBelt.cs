@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ConveyorBelt : MonoBehaviour
 {
@@ -10,8 +11,8 @@ public class ConveyorBelt : MonoBehaviour
     public Transform endPoint;
 
     [Header("Force Settings")]
-    [Tooltip("Force applied to push objects on the belt")]
-    public float pushForce = 5f;
+    [Tooltip("Speed of the conveyor belt")]
+    public float conveyorSpeed = 3f;
 
     [Header("Object Types")]
     [Tooltip("Push the player")]
@@ -21,18 +22,22 @@ public class ConveyorBelt : MonoBehaviour
     public bool affectRigidbodies = true;
 
     private Vector3 moveDirection;
-    private CharacterController playerController;
+    private List<Rigidbody> rigidbodiesOnBelt = new List<Rigidbody>();
+
+    public Vector3 ConveyorVelocity { get; private set; }
 
     private void Start()
     {
         CalculateDirection();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        if (playerController != null && affectPlayer)
+        ConveyorVelocity = moveDirection * conveyorSpeed;
+
+        if (affectRigidbodies)
         {
-            PushPlayer();
+            PushRigidbodies();
         }
     }
 
@@ -49,59 +54,43 @@ public class ConveyorBelt : MonoBehaviour
         }
     }
 
-    private void PushPlayer()
+    private void PushRigidbodies()
     {
-        if (playerController != null && playerController.enabled)
+        for (int i = rigidbodiesOnBelt.Count - 1; i >= 0; i--)
         {
-            Vector3 pushVelocity = moveDirection * pushForce * Time.fixedDeltaTime;
-            playerController.Move(pushVelocity);
+            if (rigidbodiesOnBelt[i] == null)
+            {
+                rigidbodiesOnBelt.RemoveAt(i);
+                continue;
+            }
+
+            Rigidbody rb = rigidbodiesOnBelt[i];
+            if (!rb.isKinematic)
+            {
+                Vector3 force = moveDirection * conveyorSpeed * Time.deltaTime;
+                rb.MovePosition(rb.position + force);
+            }
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (affectPlayer && other.CompareTag("Player"))
-        {
-            CharacterController controller = other.GetComponent<CharacterController>();
-            if (controller != null)
-            {
-                playerController = controller;
-            }
-        }
-
         if (affectRigidbodies)
         {
             Rigidbody rb = other.GetComponent<Rigidbody>();
-            if (rb != null && !rb.isKinematic)
+            if (rb != null && !rigidbodiesOnBelt.Contains(rb))
             {
-                rb.AddForce(moveDirection * pushForce, ForceMode.Force);
+                rigidbodiesOnBelt.Add(rb);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        Rigidbody rb = other.GetComponent<Rigidbody>();
+        if (rb != null)
         {
-            playerController = null;
-        }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (startPoint != null && endPoint != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(startPoint.position, endPoint.position);
-            Gizmos.DrawSphere(startPoint.position, 0.2f);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(endPoint.position, 0.2f);
-
-            Gizmos.color = Color.yellow;
-            Vector3 direction = (endPoint.position - startPoint.position).normalized;
-            Vector3 midPoint = (startPoint.position + endPoint.position) * 0.5f;
-            Gizmos.DrawRay(midPoint, direction * 2f);
+            rigidbodiesOnBelt.Remove(rb);
         }
     }
 }
