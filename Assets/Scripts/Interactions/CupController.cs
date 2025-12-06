@@ -58,6 +58,7 @@ public class CupController : MonoBehaviour {
 			TryDescoop();
 		else if (Input.GetKeyDown(KeyCode.R)) {
 			animationManager.Spin();
+			AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.rotate);
 		}
 	}
 
@@ -67,11 +68,13 @@ public class CupController : MonoBehaviour {
 	}
 
 	public virtual void Scoop(ScoopableObject.ScoopType type, Material mat, GameObject sourceObject) {
-		heldType = type;
+        AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.scoopable);
+
+        heldType = type;
 		heldMaterial = mat;
 		heldObject = (type == ScoopableObject.ScoopType.Object || type == ScoopableObject.ScoopType.DirtCup) ? sourceObject : null;
 
-		this.SetMatieral(mat);
+		this.SetMaterial(mat);
 
 		if (type != ScoopableObject.ScoopType.PouringWater && IsFull == false) {
 			animationManager.Scoop();
@@ -89,6 +92,7 @@ public class CupController : MonoBehaviour {
 				if (hit.collider.TryGetComponent<Container>(out var container)) {
 					if (container.TryAdd(heldType, heldMaterial)) {
 						animationManager.Descoop();
+						AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.scoopable);
 						EmptyCup();
 						cooldownTimer = cooldownDuration;
 						return;
@@ -122,7 +126,7 @@ public class CupController : MonoBehaviour {
 	}
 
 	public void EmptyCup() {
-		this.SetMatieral(defaultMaterial);
+		this.SetMaterial(defaultMaterial);
 
         heldType = ScoopableObject.ScoopType.None;
 
@@ -136,7 +140,7 @@ public class CupController : MonoBehaviour {
 	protected Material HeldMaterial => heldMaterial;
 	protected GameObject HeldObject => heldObject;
 
-	private void SetMatieral(Material mat) {
+	private void SetMaterial(Material mat) {
 		var mats = cupBodyRenderer.materials;
 		if (mats.Length > 1) {
 			mats[1] = mat;

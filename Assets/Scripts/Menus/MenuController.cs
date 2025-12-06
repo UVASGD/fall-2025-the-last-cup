@@ -163,7 +163,7 @@ public class MenuController: MonoBehaviour
     {
         PlayButtonSound();
 
-        CheckPointManager checkpointManager = FindObjectOfType<CheckPointManager>();
+        CheckPointManager checkpointManager = FindAnyObjectByType<CheckPointManager>();
         if (checkpointManager != null)
         {
             checkpointManager.PlayFromLastCheckpoint();
@@ -174,7 +174,6 @@ public class MenuController: MonoBehaviour
         }
 
         AudioManager.audioManagerInstance.StopMusic();
-        AudioManager.audioManagerInstance.PlayMusic(AudioManager.audioManagerInstance.menuBackground);
     }
 
 

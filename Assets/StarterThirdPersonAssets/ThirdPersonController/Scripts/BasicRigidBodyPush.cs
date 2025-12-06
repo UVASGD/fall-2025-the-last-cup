@@ -6,7 +6,16 @@ public class BasicRigidBodyPush : MonoBehaviour
 	public bool canPush;
 	[Range(0.5f, 5f)] public float strength = 1.1f;
 
-	private void OnControllerColliderHit(ControllerColliderHit hit)
+    private AudioManager audioManager;
+    private float lastPushSoundTime = 0f;
+    private const float PUSH_SOUND_COOLDOWN = 0.3f;
+
+    private void Start()
+    {
+        audioManager = AudioManager.audioManagerInstance;
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
 	{
 		if (canPush) PushRigidBodies(hit);
 	}
@@ -31,5 +40,11 @@ public class BasicRigidBodyPush : MonoBehaviour
 
 		// Apply the push and take strength into account
 		body.AddForce(pushDir * strength, ForceMode.Impulse);
-	}
+
+        if (audioManager != null && Time.time - lastPushSoundTime > PUSH_SOUND_COOLDOWN)
+        {
+            audioManager.PlaySFX(audioManager.push);
+            lastPushSoundTime = Time.time;
+        }
+    }
 }

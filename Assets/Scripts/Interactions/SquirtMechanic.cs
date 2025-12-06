@@ -19,6 +19,8 @@ public class SquirtMechanic : MonoBehaviour
     [Header("AnimationManager")]
     public AnimationManager animationManager;
 
+    AudioSource squirtLoopingSource;
+
     void Awake()
 	{
 		if (!this.StrictTryGetComponent(out this.cupController)) this.enabled = false;
@@ -55,6 +57,8 @@ public class SquirtMechanic : MonoBehaviour
 		} else if (Input.GetKeyUp(KeyCode.Mouse1) && squirtOn == true) 
 		{
 			animationManager.Unsquirt();
+            AudioManager.audioManagerInstance.StopLoopingSFX(squirtLoopingSource);
+            squirtLoopingSource = null;
 			squirtOn = false;
 			fireTimer = 0f;
 		}
@@ -77,6 +81,8 @@ public class SquirtMechanic : MonoBehaviour
     {
         if (projectileConfig == null) return;
 		if (waterManager.ProcessSquirting() is false) return;
+
+        squirtLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.squirt);
 
         // Emit droplets at fire rate
         fireTimer += Time.deltaTime;

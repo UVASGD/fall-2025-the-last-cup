@@ -290,7 +290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 258, y: -1073}
+  m_AnchoredPosition: {x: 258, y: -1586}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &380238020
@@ -823,7 +823,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: -99}
+  m_AnchoredPosition: {x: -300, y: -351}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &950046149
@@ -865,7 +865,20 @@ MonoBehaviour:
     Brian Ryu
 
 
-    Andrew Hong'
+    Andrew Hong
+
+
+    Katrina Ashman
+
+
+    Nolan Hill
+
+
+    Nathaniel
+    Roop
+
+
+    Syd'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 40f502f135e204e97acb8e32eb8b2b57, type: 2}
   m_sharedMaterial: {fileID: 5822542408501729426, guid: 40f502f135e204e97acb8e32eb8b2b57, type: 2}
@@ -1043,11 +1056,29 @@ MonoBehaviour:
   menuBackground: {fileID: 0}
   button: {fileID: 0}
   section1BackgroundMusic: {fileID: 0}
+  section2BackgroundMusic: {fileID: 0}
+  section3BackgroundMusic: {fileID: 0}
+  section4BackgroundMusic: {fileID: 0}
+  creditsBackgroundMusic: {fileID: 0}
   footsteps: []
-  landing: {fileID: 0}
   FootstepAudioVolume: 0.5
-  pickup_dirt: {fileID: 0}
-  pickup_item: {fileID: 0}
+  rotate: {fileID: 0}
+  scoopable: {fileID: 0}
+  equipment: {fileID: 0}
+  squirt: {fileID: 0}
+  jetpack: {fileID: 0}
+  zipline: {fileID: 0}
+  fire: {fileID: 0}
+  flies: {fileID: 0}
+  mouse: {fileID: 0}
+  mouseAttacked: {fileID: 0}
+  bird: {fileID: 0}
+  birdAttacked: {fileID: 0}
+  door: {fileID: 0}
+  sprinklers: {fileID: 0}
+  hydraulicPress: {fileID: 0}
+  checkpoint: {fileID: 0}
+  push: {fileID: 0}
 --- !u!1 &1925817933
 GameObject:
   m_ObjectHideFlags: 0
@@ -1304,7 +1335,7 @@ MonoBehaviour:
   scrollSpeed: 50
   endWaitTime: 5
   startYPosition: -1000
-  endYPosition: 1500
+  endYPosition: 2000
 --- !u!1 &1963992726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,7 +1370,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: -99}
+  m_AnchoredPosition: {x: 200, y: -356}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1963992728
@@ -1362,10 +1393,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Director, Programmer
+  m_text: 'Director, Programmer, Level Design
 
 
-    Director, 3D Art
+    Deputy Director, 3D Art, Level
+    Design
 
 
     3D Art
@@ -1381,7 +1413,19 @@ MonoBehaviour:
 
 
     3D
-    Art, Level Design'
+    Art, Level Design
+
+
+    3D Art
+
+
+    Music
+
+
+    Level Design
+
+
+    Programmer'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 40f502f135e204e97acb8e32eb8b2b57, type: 2}
   m_sharedMaterial: {fileID: 5822542408501729426, guid: 40f502f135e204e97acb8e32eb8b2b57, type: 2}
@@ -1446,7 +1490,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -157.51135, y: 0, z: -205.94751, w: 0}
+  m_margin: {x: -157.51135, y: 0, z: -587.66675, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

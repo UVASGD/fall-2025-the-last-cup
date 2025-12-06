@@ -73,6 +73,7 @@ public class CreditsManager : MonoBehaviour
 
     private void ReturnToMainMenu()
     {
+        AudioManager.audioManagerInstance.StopMusic();
         SceneManager.LoadScene(0);
     }
 
