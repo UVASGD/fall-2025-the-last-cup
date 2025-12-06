@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material #911
-    second: {fileID: 2100000, guid: cd146845c65384108a9efe19765bfa47, type: 2}
+    second: {fileID: -8580349933403904982, guid: 9bb830c46cd784c17a35191f4979382a, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -37,8 +37,8 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: fan_spin
-      takeName: Object125.001|Object125.001Action
-      internalID: 2199645931965289500
+      takeName: fan_spin
+      internalID: 8507405076430645946
       firstFrame: 0
       lastFrame: 9
       wrapMode: 0
