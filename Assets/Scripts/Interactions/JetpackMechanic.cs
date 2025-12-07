@@ -85,7 +85,7 @@ public class JetpackMechanic : MonoBehaviour {
         if (jetpackLoopSource == null)
         {
             jetpackLoopSource = AudioManager.audioManagerInstance.PlayLoopingSFX(
-                AudioManager.audioManagerInstance.jetpack
+                AudioManager.audioManagerInstance.jetpack, false, 1, 5, transform
             );
         }
     }

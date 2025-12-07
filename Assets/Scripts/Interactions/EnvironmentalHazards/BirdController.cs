@@ -62,7 +62,7 @@ public class BirdController : MonoBehaviour
             birdAnimationManager.Fly(false);
         }
 
-        birdLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.bird);
+        birdLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.bird, true, 1, 5, transform);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -171,7 +171,7 @@ public class BirdController : MonoBehaviour
         }
 
         isMoving = false;
-        birdLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.bird);
+        birdLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.bird, true, 1, 5, transform);
 
         Debug.Log($"Bird arrived at location {currentLocationIndex}");
     }

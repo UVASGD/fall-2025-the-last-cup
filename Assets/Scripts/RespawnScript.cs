@@ -26,14 +26,87 @@ public class RespawnScript : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            CharacterController controller = player.GetComponent<CharacterController>();
-            if (controller != null)
+            StartCoroutine(RespawnPlayer());
+        }
+    }
+
+    private System.Collections.IEnumerator RespawnPlayer()
+    {
+        CharacterController controller = player.GetComponent<CharacterController>();
+        if (controller != null)
+        {
+            Debug.Log("========== RESPAWN STARTED ==========");
+
+            DeathScreen.StartFade();
+
+            Debug.Log("[RespawnScript] Setting ignore triggers to TRUE");
+            player.SendMessage("SetIgnoreTriggers", true, SendMessageOptions.DontRequireReceiver);
+
+            Debug.Log("[RespawnScript] Calling ClearConveyor...");
+            player.SendMessage("ClearConveyor", SendMessageOptions.DontRequireReceiver);
+
+            Debug.Log("[RespawnScript] Removing player from all conveyors...");
+            RemovePlayerFromAllConveyors();
+
+            Debug.Log("[RespawnScript] Disabling CharacterController...");
+            controller.enabled = false;
+
+            Rigidbody playerRb = player.GetComponent<Rigidbody>();
+            if (playerRb != null)
             {
-                DeathScreen.StartFade();
-                controller.enabled = false;
-                player.transform.position = respawnPoint.transform.position;
-                controller.enabled = true;
+                Debug.Log($"[RespawnScript] Clearing rigidbody velocities. Current linear: {playerRb.linearVelocity}, angular: {playerRb.angularVelocity}");
+                playerRb.linearVelocity = Vector3.zero;
+                playerRb.angularVelocity = Vector3.zero;
             }
+
+            Debug.Log($"[RespawnScript] Teleporting from {player.transform.position} to {respawnPoint.transform.position}");
+            player.transform.position = respawnPoint.transform.position;
+            player.transform.rotation = respawnPoint.transform.rotation;
+
+            Collider[] overlappingColliders = Physics.OverlapSphere(respawnPoint.transform.position, 2f);
+            foreach (Collider col in overlappingColliders)
+            {
+                if (col.CompareTag("ConveyorBelt"))
+                {
+                    Debug.LogError($"[RespawnScript] WARNING: Respawn point '{respawnPoint.name}' is INSIDE conveyor belt trigger: {col.name}!");
+                }
+            }
+
+            Debug.Log("[RespawnScript] Waiting for FixedUpdate...");
+            yield return new WaitForFixedUpdate();
+
+            Debug.Log("[RespawnScript] Calling ResetAllMovement...");
+            player.SendMessage("ResetAllMovement", SendMessageOptions.DontRequireReceiver);
+
+            Debug.Log("[RespawnScript] Re-enabling CharacterController...");
+            controller.enabled = true;
+
+            yield return new WaitForSeconds(0.5f);
+
+            Debug.Log("[RespawnScript] Setting ignore triggers to FALSE");
+            player.SendMessage("SetIgnoreTriggers", false, SendMessageOptions.DontRequireReceiver);
+
+            Debug.Log("========== RESPAWN COMPLETED ==========");
+        }
+    }
+
+    private void RemovePlayerFromAllConveyors()
+    {
+        Rigidbody playerRb = player.GetComponent<Rigidbody>();
+        if (playerRb != null)
+        {
+            ConveyorBelt[] allConveyors = FindObjectsByType<ConveyorBelt>(FindObjectsSortMode.None);
+            Debug.Log($"[RespawnScript] Found {allConveyors.Length} conveyor belts in scene");
+
+            foreach (ConveyorBelt conveyor in allConveyors)
+            {
+                Debug.Log($"[RespawnScript] Removing player from conveyor: {conveyor.name}");
+                conveyor.RemoveRigidbody(playerRb);
+            }
+        }
+        else
+        {
+            Debug.LogError("[RespawnScript] Cannot remove player from conveyors - player has no Rigidbody!");
         }
     }
 }

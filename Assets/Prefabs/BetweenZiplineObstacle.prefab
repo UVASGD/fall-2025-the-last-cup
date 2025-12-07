@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7e8497f83b0238439b4fb53ebd2baa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 8
+  moveSpeed: 10
   respawnCollider: {fileID: 0}
 --- !u!114 &34890506538354650
 MonoBehaviour:

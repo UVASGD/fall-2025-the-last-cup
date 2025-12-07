@@ -17,7 +17,7 @@ public class MenuController: MonoBehaviour
     [SerializeField] private Slider sfxVolSlider = null;
     public AudioMixer audioMixer;
     [SerializeField] private float musicVolDefault = 0.5f;
-    [SerializeField] private float sfxVolDefault = 0.1f;
+    [SerializeField] private float sfxVolDefault = 0.05f;
     private float _musicVolume;
     private float _sfxVolume;
 
@@ -33,7 +33,7 @@ public class MenuController: MonoBehaviour
     // [SerializeField] private Toggle fullscreenToggle = null;
     [SerializeField] private float brightnessDefault = 0.0f;
     [SerializeField] private int qualityDefault = 0;
-    [SerializeField] private int resolutionDefault = 0;
+    [SerializeField] private int resolutionDefault = -1;
     // [SerializeField] private bool isFullscreenDefault = false;
     private float _brightnessLevel;
     private int _qualityLevel;
@@ -52,20 +52,38 @@ public class MenuController: MonoBehaviour
     private void Start()
     {
         // Setup the screen sizes dropdown options
-        resolutions = Screen.resolutions
+        Resolution[] allResolutions = Screen.resolutions
             .Where(r => r.refreshRateRatio.value.Equals(Screen.currentResolution.refreshRateRatio.value))
             .ToArray();
 
         resolutionDropdown.ClearOptions();
 
         List<string> options = new List<string>();
+        List<Resolution> uniqueResolutions = new List<Resolution>();
+
+        for (int i = 0; i < allResolutions.Length; i++)
+        {
+            string option = allResolutions[i].width + " x " + allResolutions[i].height;
+
+            if (!options.Contains(option))
+            {
+                options.Add(option);
+                uniqueResolutions.Add(allResolutions[i]);
+            }
+        }
+
+        resolutions = uniqueResolutions.ToArray();
+        resolutionDropdown.AddOptions(options);
 
         int currentResolutionIndex = 0;
+        int default1920x1080Index = -1;
 
         for (int i = 0; i < resolutions.Length; i++)
         {
-            string option = resolutions[i].width + " x " + resolutions[i].height;
-            options.Add(option);
+            if (resolutions[i].width == 1920 && resolutions[i].height == 1080)
+            {
+                default1920x1080Index = i;
+            }
 
             if (resolutions[i].width == Screen.width &&
                 resolutions[i].height == Screen.height)
@@ -74,18 +92,37 @@ public class MenuController: MonoBehaviour
             }
         }
 
-        resolutionDropdown.AddOptions(options.Distinct().ToList());
-
         if (PlayerPrefs.HasKey("resolution"))
         {
-            resolutionDropdown.value = PlayerPrefs.GetInt("resolution");
+            int savedIndex = PlayerPrefs.GetInt("resolution");
+            if (savedIndex >= 0 && savedIndex < resolutions.Length)
+            {
+                resolutionDropdown.value = savedIndex;
+                _resolution = savedIndex;
+            }
+            else
+            {
+                resolutionDropdown.value = currentResolutionIndex;
+                _resolution = currentResolutionIndex;
+            }
         }
-        else 
+        else
         {
-            resolutionDropdown.value = currentResolutionIndex;
+            if (default1920x1080Index >= 0)
+            {
+                resolutionDropdown.value = default1920x1080Index;
+                _resolution = default1920x1080Index;
+                Screen.SetResolution(1920, 1080, FullScreenMode.Windowed);
+            }
+            else
+            {
+                resolutionDropdown.value = currentResolutionIndex;
+                _resolution = currentResolutionIndex;
+            }
         }
 
         resolutionDropdown.RefreshShownValue();
+
 
         // Set up defaults
         // Instead of blindly resetting, check if player has played before
@@ -266,27 +303,18 @@ public class MenuController: MonoBehaviour
             if (colorAdjustments != null)
                 colorAdjustments.postExposure.value = _brightnessLevel;
         }
-        /*
-        else
-        {
-            Debug.LogError("Color Adjustments not found in volume.");
-        }
-        */
 
         PlayerPrefs.SetInt("quality", _qualityLevel);
         QualitySettings.SetQualityLevel(_qualityLevel);
 
-        /*
-        PlayerPrefs.SetInt("isFullscreen", (_isFullscreen ? 1 : 0));
-        Screen.fullScreenMode = _isFullscreen
-        ? FullScreenMode.ExclusiveFullScreen
-        : FullScreenMode.Windowed;
-        */
-
         PlayerPrefs.SetInt("resolution", _resolution);
-        Resolution resolution = resolutions[_resolution];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
+        if (_resolution >= 0 && _resolution < resolutions.Length)
+        {
+            Resolution resolution = resolutions[_resolution];
+            Screen.SetResolution(resolution.width, resolution.height, FullScreenMode.Windowed);
+        }
     }
+
 
     public void PlayConfirmationBox()
     {

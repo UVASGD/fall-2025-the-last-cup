@@ -58,7 +58,7 @@ public class ConveyorBelt : MonoBehaviour
     {
         for (int i = rigidbodiesOnBelt.Count - 1; i >= 0; i--)
         {
-            if (rigidbodiesOnBelt[i] == null)
+            if (rigidbodiesOnBelt[i] == null || !rigidbodiesOnBelt[i].gameObject.activeInHierarchy)
             {
                 rigidbodiesOnBelt.RemoveAt(i);
                 continue;
@@ -69,6 +69,11 @@ public class ConveyorBelt : MonoBehaviour
             {
                 Vector3 force = moveDirection * conveyorSpeed * Time.deltaTime;
                 rb.MovePosition(rb.position + force);
+
+                if (rb.CompareTag("Player"))
+                {
+                    Debug.Log($"[ConveyorBelt {name}] Pushing PLAYER rigidbody with force: {force}");
+                }
             }
         }
     }
@@ -91,6 +96,20 @@ public class ConveyorBelt : MonoBehaviour
         if (rb != null)
         {
             rigidbodiesOnBelt.Remove(rb);
+        }
+    }
+
+    public void RemoveRigidbody(Rigidbody rb)
+    {
+        if (rb != null && rigidbodiesOnBelt.Contains(rb))
+        {
+            Debug.Log($"[ConveyorBelt {name}] Removing rigidbody: {rb.name}");
+            rigidbodiesOnBelt.Remove(rb);
+            Debug.Log($"[ConveyorBelt {name}] Rigidbodies on belt count: {rigidbodiesOnBelt.Count}");
+        }
+        else
+        {
+            Debug.Log($"[ConveyorBelt {name}] RemoveRigidbody called but rb not in list or is null");
         }
     }
 }

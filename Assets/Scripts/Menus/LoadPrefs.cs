@@ -61,7 +61,7 @@ public class LoadPrefs : MonoBehaviour
             }
             else
             {
-                float localSfxVol = 0.5f;
+                float localSfxVol = 0.05f;
                 audioMixer.SetFloat("sfx_volume", SliderToDb(localSfxVol));
                 sfxVolSlider.value = localSfxVol;
             }
@@ -115,7 +115,7 @@ public class LoadPrefs : MonoBehaviour
             }
             else
             {
-                float localBrightness = 0.0f;
+                float localBrightness = 0.5f;
                 if (postProcessingVolume.profile.TryGet(out colorAdjustments))
                 {
                     if (colorAdjustments != null)
@@ -138,7 +138,7 @@ public class LoadPrefs : MonoBehaviour
             }
             else
             {
-                int localQuality = 1;
+                int localQuality = 0;
                 QualitySettings.SetQualityLevel(localQuality);
                 qualityDropdown.value = localQuality;
             }
@@ -157,6 +157,8 @@ public class LoadPrefs : MonoBehaviour
                     Screen.fullScreenMode = FullScreenMode.Windowed;
                 }
                 */
+
+                Screen.fullScreenMode = FullScreenMode.Windowed;
 
                 resolutions = Screen.resolutions
                     .Where(r => r.refreshRateRatio.value.Equals(Screen.currentResolution.refreshRateRatio.value))

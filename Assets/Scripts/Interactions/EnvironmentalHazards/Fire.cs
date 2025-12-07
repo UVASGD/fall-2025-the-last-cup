@@ -7,7 +7,7 @@ public class Fire : MonoBehaviour
     void Start()
     {
         fireLoopSource = AudioManager.audioManagerInstance.PlayLoopingSFX(
-            AudioManager.audioManagerInstance.fire
+            AudioManager.audioManagerInstance.fire, true, 1, 6, transform
         );
     }
 

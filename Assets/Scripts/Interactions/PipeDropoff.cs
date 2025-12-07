@@ -22,7 +22,6 @@ public class PipeDropoff : MonoBehaviour
     {
         if (exitDoor != null)
         {
-            // Modified this line below for door in playground scene, but can be modified for another scene
             doorOpenRotation = Quaternion.Euler(-90f, 90, 0f);
         }
 
@@ -30,7 +29,10 @@ public class PipeDropoff : MonoBehaviour
         {
             for (int i = 0; i < sprinklerParticles.Length; i++)
             {
-                sprinklerParticles[i].Stop();
+                if (sprinklerParticles[i] != null)
+                {
+                    sprinklerParticles[i].Stop();
+                }
             }
         }
         else
@@ -54,7 +56,6 @@ public class PipeDropoff : MonoBehaviour
         if (other.CompareTag("Pipe"))
         {
             string pipeName = other.gameObject.name;
-            // Debug.Log($"Pipe detected: {pipeName}");
 
             Transform matchingPipe = pipePuzzle.Find(pipeName);
 
@@ -62,8 +63,6 @@ public class PipeDropoff : MonoBehaviour
             {
                 matchingPipe.gameObject.SetActive(true);
                 numPipesFound++;
-
-                // Debug.Log($"Activated {pipeName}. Total pipes found: {numPipesFound}/{totalPipesNeeded}");
 
                 Destroy(other.gameObject);
 
@@ -81,7 +80,6 @@ public class PipeDropoff : MonoBehaviour
 
     private void OnPuzzleComplete()
     {
-        // Debug.Log("Pipe puzzle completed!");
         puzzleCompleted = true;
 
         OpenDoor();
@@ -108,7 +106,10 @@ public class PipeDropoff : MonoBehaviour
             AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.sprinklers);
             for (int i = 0; i < sprinklerParticles.Length; i++)
             {
-                sprinklerParticles[i].Play();
+                if (sprinklerParticles[i] != null)
+                {
+                    sprinklerParticles[i].Play();
+                }
             }
         }
         else
@@ -116,17 +117,19 @@ public class PipeDropoff : MonoBehaviour
             Debug.LogWarning("Sprinkler particle system references are missing!");
         }
 
-        if (fires != null)
+        if (fires != null && fires.Length > 0)
         {
             for (int i = 0; i < fires.Length; i++)
             {
-                // Destroy fire rather than have set to inactive
-                Destroy(fires[i]);
+                if (fires[i] != null)
+                {
+                    Destroy(fires[i]);
+                }
             }
         }
         else
         {
-            Debug.LogWarning("Fire references are missing!");
+            Debug.LogWarning("Fire references are missing or empty!");
         }
     }
 }

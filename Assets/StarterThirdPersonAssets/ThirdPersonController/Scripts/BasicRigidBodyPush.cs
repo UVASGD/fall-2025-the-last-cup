@@ -41,10 +41,12 @@ public class BasicRigidBodyPush : MonoBehaviour
 		// Apply the push and take strength into account
 		body.AddForce(pushDir * strength, ForceMode.Impulse);
 
+		/*
         if (audioManager != null && Time.time - lastPushSoundTime > PUSH_SOUND_COOLDOWN)
         {
             audioManager.PlaySFX(audioManager.push);
             lastPushSoundTime = Time.time;
         }
+		*/
     }
 }

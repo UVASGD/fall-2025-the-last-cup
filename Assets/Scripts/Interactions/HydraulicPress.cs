@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HydraulicPress : MonoBehaviour
@@ -21,6 +22,7 @@ public class HydraulicPress : MonoBehaviour
     private PressState currentState = PressState.MovingDown;
     private bool playerInCrushZone = false;
     private GameObject playerObject;
+    private bool isPlaying = false;
 
     private enum PressState
     {
@@ -74,7 +76,11 @@ public class HydraulicPress : MonoBehaviour
 
     private void UpdateMovingDown()
     {
-        AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.hydraulicPress);
+        if (isPlaying == false)
+        {
+            AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.hydraulicPress, true, 1, 10, transform);
+            isPlaying = true;
+        }
 
         float progress = Mathf.Clamp01(currentTime * pressSpeed);
         float smoothProgress = Mathf.SmoothStep(0f, 1f, progress);
