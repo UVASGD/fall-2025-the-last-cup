@@ -19,11 +19,8 @@ public class LoadPrefs : MonoBehaviour
     [SerializeField] private Slider sfxVolSlider = null;
     public AudioMixer audioMixer;
 
-    /*
     [Header("Gameplay Setting")]
     [SerializeField] private Slider mouseSensSlider = null;
-    [SerializeField] private MouseSensitivityHandler mouseHandler;
-    */
 
     [Header("Graphics Settings")]
     [SerializeField] private Slider brightnessSlider = null;
@@ -69,28 +66,36 @@ public class LoadPrefs : MonoBehaviour
                 sfxVolSlider.value = localSfxVol;
             }
 
-            /*
+
             if (PlayerPrefs.HasKey("sensitivity"))
             {
                 float localSensitivity = PlayerPrefs.GetFloat("sensitivity");
-                if (mouseHandler != null)
+
+                if (MouseSensitivityHandler.Instance != null)
                 {
-                    mouseHandler.SetSensitivity(localSensitivity);
-                    mouseHandler.AdjustSpeed(localSensitivity);
+                    MouseSensitivityHandler.Instance.SetSensitivity(localSensitivity);
                 }
-                mouseSensSlider.value = localSensitivity;
+
+                if (mouseSensSlider != null)
+                {
+                    mouseSensSlider.value = localSensitivity;
+                }
             }
             else
             {
-                float localSensitivity = 5f;
-                if (mouseHandler != null)
+                float localSensitivity = 3f;
+
+                if (MouseSensitivityHandler.Instance != null)
                 {
-                    mouseHandler.SetSensitivity(localSensitivity);
-                    mouseHandler.AdjustSpeed(localSensitivity);
+                    MouseSensitivityHandler.Instance.SetSensitivity(localSensitivity);
                 }
-                mouseSensSlider.value = localSensitivity;
+
+                if (mouseSensSlider != null)
+                {
+                    mouseSensSlider.value = localSensitivity;
+                }
             }
-            */
+
 
             if (PlayerPrefs.HasKey("brightness"))
             {
