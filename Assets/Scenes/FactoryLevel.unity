@@ -654,7 +654,12 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5accdf2fda3f091428d930ec1ba4b314, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
+--- !u!95 &181003710 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1626554708956874784, guid: b988db11b27b8644bbd3b8d074554ee6, type: 3}
+  m_PrefabInstance: {fileID: 181003709}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &315939550 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4252702714118357385, guid: 24d390b8df0144bd1a3c4094977f028f, type: 3}
@@ -6604,7 +6609,7 @@ PrefabInstance:
     - target: {fileID: 5371166227698678218, guid: 9524933c7921977459973a0970add5f6, type: 3}
       propertyPath: animator
       value: 
-      objectReference: {fileID: 1768332728}
+      objectReference: {fileID: 181003710}
     - target: {fileID: 5412168576371745707, guid: 9524933c7921977459973a0970add5f6, type: 3}
       propertyPath: m_Name
       value: Managers
@@ -13884,6 +13889,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 2009504599}
   - {fileID: 1919083064}
+  - {fileID: 1943572568}
+  - {fileID: 181003709}
+  - {fileID: 1009414134}
   - {fileID: 1997100701}
   - {fileID: 3241588449494060051}
   - {fileID: 1093514566}
@@ -13903,7 +13911,6 @@ SceneRoots:
   - {fileID: 1399276971}
   - {fileID: 447278036}
   - {fileID: 934373293}
-  - {fileID: 1009414134}
   - {fileID: 697551141}
   - {fileID: 1491604505}
   - {fileID: 64787134}
@@ -13917,9 +13924,12 @@ SceneRoots:
   - {fileID: 1716109690}
   - {fileID: 876666921}
   - {fileID: 1560217186}
+<<<<<<< Updated upstream
   - {fileID: 459995977}
   - {fileID: 2030412138}
   - {fileID: 1129052897}
   - {fileID: 292170222}
   - {fileID: 824278685}
   - {fileID: 1795734500}
+=======
+>>>>>>> Stashed changes
