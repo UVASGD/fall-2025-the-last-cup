@@ -3,7 +3,22 @@ guid: ffb030da9e3654e49b2d148e0c19ffe3
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Leaves
+    second: {fileID: 2100000, guid: e534f0a21b40b8a4fa21386538154f90, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Thorns
+    second: {fileID: 2100000, guid: 1ba2f1a472c57e543a4bb3f3449b4533, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Vine
+    second: {fileID: -7985207590354791666, guid: 1f46c27aa7b924af5a2bc1fef846a089, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

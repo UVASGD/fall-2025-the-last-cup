@@ -28,7 +28,7 @@ public class CupController : MonoBehaviour {
 	public bool HasStraw => _hasStraw;
 
 	// Private fields
-	private ScoopableObject.ScoopType heldType;
+	private ScoopableObject.ScoopType heldType = ScoopableObject.ScoopType.None;
 	private Material heldMaterial;
 	private GameObject heldObject;
 	private float cooldownTimer = 0f;
