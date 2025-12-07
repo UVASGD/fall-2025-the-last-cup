@@ -20,19 +20,20 @@ public class Interactor : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // If left mouse button, scoop or descoop
+        if (PauseMenu.GameIsPaused)
+            return;
+
+        if (Input.GetMouseButtonDown(0))
         {
             TryInteract(_scoopableMask, i => i is ScoopableObject || i is Container, QueryTriggerInteraction.Collide);
-            // QueryTriggerInteraction.Collide means query should register with hits with trigger colliders
         }
 
-        if (Input.GetKeyDown(KeyCode.Q)) // If press Q, can can zipline
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             TryInteract(_ziplineMask, i => i is Zipline, QueryTriggerInteraction.Ignore);
-            // QueryTriggerInteraction.Ignore means query never reports trigger hits
         }
 
-        if (Input.GetKeyDown(KeyCode.E)) // If press E, then an equip/unequip
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (!TryInteract(_equipmentMask, i => i is EquipmentInteractable, QueryTriggerInteraction.Ignore))
             {

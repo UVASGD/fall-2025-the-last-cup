@@ -1,18 +1,15 @@
 using System;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class RatBehavior : MonoBehaviour
 {
-    // Animator helpers
     private Animator animator;
 
     private void Run(bool runOrNot)
     {
         if (animator)
         {
-            animator.SetTrigger("run");
+            animator.SetBool("run", runOrNot);
         }
     }
     private void Jump()
@@ -28,7 +25,6 @@ public class RatBehavior : MonoBehaviour
     private static bool foundPipes = false;
     private static PipeNodes[] pipes;
 
-    // If no starting pipe is established it defaults to the nearest pipe
     [SerializeField]
     PipeNodes currentPipe;
 
@@ -43,7 +39,7 @@ public class RatBehavior : MonoBehaviour
 
     private int currentPipeNode;
     private bool goingForward;
-    
+
     [SerializeField]
     private float currentStunTime = 0;
 
@@ -67,9 +63,10 @@ public class RatBehavior : MonoBehaviour
             }
 
             AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.mouseAttacked);
-            
+
+            Run(false);  // Add this to stop running animation when stunned
             Shake();
-            currentStunTime = stunTime;
+            currentStunTime -= Time.deltaTime;
         }
     }
 
@@ -78,18 +75,19 @@ public class RatBehavior : MonoBehaviour
         bool foundSingle = false;
         PipeLoc ret = new PipeLoc();
         float minDistance = float.MaxValue;
-        foreach(PipeNodes pipe in checkPipes) {
+        foreach (PipeNodes pipe in checkPipes)
+        {
             if (excludePipe != pipe)
             {
                 foundSingle = true;
-                for (int i = 0 ; i < pipe.pipeNodes.Length ; i++)
+                for (int i = 0; i < pipe.pipeNodes.Length; i++)
                 {
                     if ((pipe.pipeNodes[i].position - gameObject.transform.position).magnitude < minDistance)
                     {
                         ret.pipe = pipe;
                         ret.nodeIdx = i;
                     }
-                } 
+                }
             }
         }
         if (!foundSingle)
@@ -99,7 +97,7 @@ public class RatBehavior : MonoBehaviour
 
         return ret;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -110,7 +108,7 @@ public class RatBehavior : MonoBehaviour
             return;
         }
 
-        mouseLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.mouse);
+        mouseLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.mouse, true, 1, 3, transform);
 
         if (!foundPipes)
         {
@@ -118,12 +116,10 @@ public class RatBehavior : MonoBehaviour
         }
 
         PipeLoc loc;
-        // Finds nearest pipe node to attach to 
         if (currentPipe == null)
         {
-            loc = findNearest(pipes,null);
+            loc = findNearest(pipes, null);
         }
-        // Finds nearest singular part of pipe to attach to
         else
         {
             PipeNodes[] singleList = new PipeNodes[1];
@@ -135,21 +131,17 @@ public class RatBehavior : MonoBehaviour
         currentPipeNode = loc.nodeIdx;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (currentStunTime <= 0)
         {
             Run(true);
             Vector3 currentToNodeDiff = currentPipe.pipeNodes[currentPipeNode].position - gameObject.transform.position;
-            // Reaches the next node then proceeds to set a new targeted node
-            // Right now it just reverse direction on the pipe ending
             if (currentToNodeDiff.magnitude < snapNodeThreshold)
             {
                 gameObject.transform.position = currentPipe.pipeNodes[currentPipeNode].position;
                 if (goingForward)
                 {
-                    // Reached end, reverses direction
                     if (currentPipeNode == currentPipe.pipeNodes.Length - 1)
                     {
                         goingForward = false;
@@ -177,7 +169,7 @@ public class RatBehavior : MonoBehaviour
             {
                 Vector3 currentToNodeDir = Vector3.Normalize(currentPipe.pipeNodes[currentPipeNode].position - gameObject.transform.position);
                 gameObject.transform.position += (currentToNodeDir * traverseSpeed * Time.deltaTime);
-                gameObject.transform.rotation = Quaternion.Euler(0,Mathf.Rad2Deg * Mathf.Atan2(currentToNodeDir.x,currentToNodeDir.z),0);
+                gameObject.transform.rotation = Quaternion.Euler(0, Mathf.Rad2Deg * Mathf.Atan2(currentToNodeDir.x, currentToNodeDir.z), 0);
             }
         }
         else

@@ -9,8 +9,8 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) // This is temporary for testing purposes since it conflicts with Esc when in Play Mode
-        //if (Input.GetKeyDown(KeyCode.Escape))
+        // if (Input.GetKeyDown(KeyCode.K)) // This is temporary for testing purposes since it conflicts with Esc when in Play Mode
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (GameIsPaused)
             {

@@ -18,9 +18,9 @@ public class AudioManager : MonoBehaviour
 
     [Header("Level Music")]
     public AudioClip section1BackgroundMusic;
-    public AudioClip section2BackgroundMusic;
-    public AudioClip section3BackgroundMusic;
-    public AudioClip section4BackgroundMusic;
+    // public AudioClip section2BackgroundMusic;
+    // public AudioClip section3BackgroundMusic;
+    // public AudioClip section4BackgroundMusic;
     public AudioClip creditsBackgroundMusic;
 
     [Header("Movement and Mechanics")]
@@ -50,6 +50,7 @@ public class AudioManager : MonoBehaviour
 
     public static AudioManager audioManagerInstance;
 
+
     private void Awake()
     {
         if (audioManagerInstance == null)
@@ -67,6 +68,7 @@ public class AudioManager : MonoBehaviour
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
 
+        /*
         switch (sceneIndex)
         {
             case 0:
@@ -85,6 +87,20 @@ public class AudioManager : MonoBehaviour
                 PlayMusic(section4BackgroundMusic);
                 break;
             case 5:
+                PlayMusic(creditsBackgroundMusic);
+                break;
+        }
+        */
+
+        switch (sceneIndex)
+        {
+            case 0:
+                PlayMusic(menuBackground);
+                break;
+            case 1:
+                PlayMusic(section1BackgroundMusic);
+                break;
+            case 2:
                 PlayMusic(creditsBackgroundMusic);
                 break;
         }
@@ -109,14 +125,28 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public AudioSource PlayLoopingSFX(AudioClip sfxClip)
+    public AudioSource PlayLoopingSFX(AudioClip sfxClip, bool spatial3D, int minDistance, int maxDistance, Transform attachTo = null)
     {
         if (sfxClip == null) return null;
 
-        AudioSource source = gameObject.AddComponent<AudioSource>();
+        GameObject targetObject = attachTo != null ? attachTo.gameObject : gameObject;
+        AudioSource source = targetObject.AddComponent<AudioSource>();
         source.clip = sfxClip;
         source.loop = true;
         source.outputAudioMixerGroup = sfxSource.outputAudioMixerGroup;
+
+        if (spatial3D)
+        {
+            source.spatialBlend = 1.0f;
+            source.rolloffMode = AudioRolloffMode.Logarithmic;
+            source.minDistance = minDistance;
+            source.maxDistance = maxDistance;
+        }
+        else
+        {
+            source.spatialBlend = 0f;
+        }
+
         source.Play();
 
         return source;
@@ -152,7 +182,7 @@ public class AudioManager : MonoBehaviour
     {
         if (footsteps.Length > 0 && sfxSource != null)
         {
-            int index = Random.Range(0, footsteps.Length);
+            int index = UnityEngine.Random.Range(0, footsteps.Length);
 
             sfxSource.transform.position = position;
             sfxSource.PlayOneShot(footsteps[index], FootstepAudioVolume);

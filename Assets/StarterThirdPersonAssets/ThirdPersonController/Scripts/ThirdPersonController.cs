@@ -153,7 +153,21 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
-        private ConveyorBelt currentConveyorBelt;
+        private ConveyorBelt _currentConveyorBelt;
+        private ConveyorBelt currentConveyorBelt
+        {
+            get { return _currentConveyorBelt; }
+            set
+            {
+                if (_currentConveyorBelt != value)
+                {
+                    Debug.LogWarning($"[ThirdPersonController] currentConveyorBelt CHANGED from {(_currentConveyorBelt != null ? _currentConveyorBelt.name : "null")} to {(value != null ? value.name : "null")}");
+                    _currentConveyorBelt = value;
+                }
+            }
+        }
+        private bool ignoreTriggers = false;
+
 
         private AudioSource walkingLoopSource;
 
@@ -207,6 +221,39 @@ namespace StarterAssets
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
         }
+
+        public void ClearConveyor()
+        {
+            Debug.Log($"[ThirdPersonController] ClearConveyor called. Current belt: {(currentConveyorBelt != null ? currentConveyorBelt.name : "null")}");
+
+            if (currentConveyorBelt != null)
+            {
+                Rigidbody rb = GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    Debug.Log($"[ThirdPersonController] Removing rigidbody from conveyor: {currentConveyorBelt.name}");
+                    currentConveyorBelt.RemoveRigidbody(rb);
+                }
+            }
+
+            currentConveyorBelt = null;
+
+            Debug.Log("[ThirdPersonController] ClearConveyor completed. Current belt set to null.");
+        }
+
+        public void ResetAllMovement()
+        {
+            Debug.Log($"[ThirdPersonController] ResetAllMovement called. Controller velocity: {_controller.velocity}");
+
+            currentConveyorBelt = null;
+            _verticalVelocity = 0f;
+            _speed = 0f;
+            _animationBlend = 0f;
+            _rotationVelocity = 0f;
+
+            Debug.Log("[ThirdPersonController] All movement variables reset.");
+        }
+
 
         private void Update()
         {
@@ -289,7 +336,18 @@ namespace StarterAssets
         {
             if (currentConveyorBelt != null && currentConveyorBelt.affectPlayer)
             {
-                return currentConveyorBelt.ConveyorVelocity * Time.deltaTime;
+                float distanceToBelt = Vector3.Distance(transform.position, currentConveyorBelt.transform.position);
+
+                if (distanceToBelt > 5f)
+                {
+                    Debug.Log($"[ThirdPersonController] Player too far from conveyor ({distanceToBelt}m), clearing reference to {currentConveyorBelt.name}");
+                    currentConveyorBelt = null;
+                    return Vector3.zero;
+                }
+
+                Vector3 velocity = currentConveyorBelt.ConveyorVelocity * Time.deltaTime;
+                Debug.Log($"[ThirdPersonController] Applying conveyor velocity: {velocity} from belt: {currentConveyorBelt.name} (distance: {distanceToBelt}m)");
+                return velocity;
             }
             return Vector3.zero;
         }
@@ -430,6 +488,12 @@ namespace StarterAssets
             _controller.Move(playerMovement + verticalMovement + conveyorVelocity);
 
 
+            if (_controller.velocity.magnitude < 0.01f && _input.move == Vector2.zero)
+            {
+                currentConveyorBelt = null;
+            }
+
+
             // update animator if using character
             if (_hasAnimator) {
 				_animator.SetFloat(_animIDSpeed, _animationBlend);
@@ -524,13 +588,27 @@ namespace StarterAssets
                 GroundedRadius);
         }
 
+        public void SetIgnoreTriggers(bool ignore)
+        {
+            Debug.Log($"[ThirdPersonController] SetIgnoreTriggers({ignore})");
+            ignoreTriggers = ignore;
+        }
+
+
         private void OnTriggerEnter(Collider other)
         {
+            if (ignoreTriggers)
+            {
+                Debug.Log($"[ThirdPersonController] OnTriggerEnter IGNORED for {other.name} (ignoreTriggers = true)");
+                return;
+            }
+
             if (other.gameObject.CompareTag("ConveyorBelt"))
             {
                 ConveyorBelt belt = other.GetComponent<ConveyorBelt>();
                 if (belt != null)
                 {
+                    Debug.LogWarning($"[ThirdPersonController] OnTriggerEnter - Setting conveyor to: {belt.name}. Player position: {transform.position}. Belt position: {belt.transform.position}");
                     currentConveyorBelt = belt;
                 }
             }
@@ -551,8 +629,10 @@ namespace StarterAssets
         {
             if (other.gameObject.CompareTag("ConveyorBelt"))
             {
-                if (currentConveyorBelt != null && other.GetComponent<ConveyorBelt>() == currentConveyorBelt)
+                ConveyorBelt belt = other.GetComponent<ConveyorBelt>();
+                if (belt != null && belt == currentConveyorBelt)
                 {
+                    Debug.Log($"[ThirdPersonController] Exited conveyor belt: {belt.name}");
                     currentConveyorBelt = null;
                 }
             }
@@ -571,13 +651,14 @@ namespace StarterAssets
             }
         }
 
+
         private void HandleWalkingSound()
         {
             bool isMoving = _input.move != Vector2.zero && Grounded;
 
             if (isMoving && walkingLoopSource == null && _audioManager != null)
             {
-                walkingLoopSource = _audioManager.PlayLoopingSFX(_audioManager.footsteps[0]);
+                walkingLoopSource = _audioManager.PlayLoopingSFX(_audioManager.footsteps[0], false, 1, 5, transform);
                 if (walkingLoopSource != null)
                 {
                     walkingLoopSource.volume = _audioManager.FootstepAudioVolume;

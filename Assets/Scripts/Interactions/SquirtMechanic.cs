@@ -82,7 +82,13 @@ public class SquirtMechanic : MonoBehaviour
         if (projectileConfig == null) return;
 		if (waterManager.ProcessSquirting() is false) return;
 
-        squirtLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.squirt);
+        if (squirtLoopingSource == null)
+        {
+            squirtLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(
+                AudioManager.audioManagerInstance.squirt, false, 1, 5,
+                transform
+            );
+        }
 
         // Emit droplets at fire rate
         fireTimer += Time.deltaTime;

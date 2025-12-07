@@ -1,5 +1,3 @@
-using Microsoft.Unity.VisualStudio.Editor;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DeathScreen : MonoBehaviour
@@ -26,7 +24,6 @@ public class DeathScreen : MonoBehaviour
 
     private float currentStayTime = 0;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (FindObjectsByType<DeathScreen>(FindObjectsSortMode.None).Length != 1)
@@ -58,7 +55,6 @@ public class DeathScreen : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (deathFade)
@@ -75,7 +71,7 @@ public class DeathScreen : MonoBehaviour
             if (currentTransitionTime > 0)
             {
                 currentTransitionTime -= Time.deltaTime;
-                givenImage.color = Color.Lerp(startColor, endColor, currentTransitionTime/transitionTime);
+                givenImage.color = Color.Lerp(startColor, endColor, currentTransitionTime / transitionTime);
             }
             else
             {

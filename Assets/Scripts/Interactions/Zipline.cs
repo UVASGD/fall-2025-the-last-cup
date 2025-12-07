@@ -111,6 +111,7 @@ public class Zipline : MonoBehaviour, IInteractable
     private float _lastRightTapTime = -999f;
     private bool _leftWasPressed = false;
     private bool _rightWasPressed = false;
+    private AudioSource ziplineSource;
 
     private void Awake()
     {
@@ -136,7 +137,10 @@ public class Zipline : MonoBehaviour, IInteractable
 
         if (player == null) player = interactor?.gameObject;
 
+        ziplineSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.zipline, false, 1, 5, transform);
+
         StartZipline(player);
+
         return true;
     }
 
@@ -145,8 +149,7 @@ public class Zipline : MonoBehaviour, IInteractable
         if (!zipping || _rider == null) return;
 
         animationManager.Zipline(true);
-        AudioSource ziplineSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.zipline);
-
+        
         float unitsPer01 = Mathf.Max(0.01f, _length);
         _t = Mathf.Min(1f, _t + (zipSpeed / unitsPer01) * Time.deltaTime);
 
@@ -200,8 +203,6 @@ public class Zipline : MonoBehaviour, IInteractable
         if (_t >= 1f)
         {
             animationManager.Zipline(false);
-            AudioManager.audioManagerInstance.StopLoopingSFX(ziplineSource);
-            ziplineSource = null;
             ResetZipline();
         }
     }
@@ -454,6 +455,8 @@ public class Zipline : MonoBehaviour, IInteractable
         _isSwitching = false;
 
         zipping = false;
+        AudioManager.audioManagerInstance.StopLoopingSFX(ziplineSource);
+        ziplineSource = null;
     }
 
     private void ResetZipline()
