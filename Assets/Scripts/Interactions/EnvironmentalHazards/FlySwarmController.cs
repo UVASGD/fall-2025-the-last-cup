@@ -49,6 +49,7 @@ public class FlySwarmController : SwarmController
         }
 
         SpawnFlies();
+        AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.flies);
     }
 
     private void SpawnFlies()

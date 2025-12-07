@@ -20,6 +20,8 @@ public class BirdController : MonoBehaviour
     private bool isMoving = false;
     private Collider birdCollider;
 
+    private AudioSource birdLoopingSource;
+
     private void Awake()
     {
         SetupCollider();
@@ -59,6 +61,8 @@ public class BirdController : MonoBehaviour
         {
             birdAnimationManager.Fly(false);
         }
+
+        birdLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.bird);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -70,6 +74,14 @@ public class BirdController : MonoBehaviour
         {
             Debug.Log("Bird hit by water projectile!");
             isMoving = true;
+
+            if (birdLoopingSource != null)
+            {
+                AudioManager.audioManagerInstance.StopLoopingSFX(birdLoopingSource);
+                birdLoopingSource = null;
+            }
+
+            AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.birdAttacked);
 
             if (birdAnimationManager != null)
             {
@@ -159,6 +171,7 @@ public class BirdController : MonoBehaviour
         }
 
         isMoving = false;
+        birdLoopingSource = AudioManager.audioManagerInstance.PlayLoopingSFX(AudioManager.audioManagerInstance.bird);
 
         Debug.Log($"Bird arrived at location {currentLocationIndex}");
     }

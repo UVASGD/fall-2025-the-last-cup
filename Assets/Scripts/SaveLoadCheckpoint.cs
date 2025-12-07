@@ -29,6 +29,8 @@ public class SaveLoadCheckpoint : MonoBehaviour
 
     public void SaveCheckpoint(string sceneName, int checkpointIndex, Vector3 position, string checkpointName)
     {
+        AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.checkpoint);
+
         currentCheckpoint = new CheckpointData(sceneName, checkpointIndex, position, checkpointName);
 
         PlayerPrefs.SetString(LAST_CHECKPOINT_SCENE, sceneName);

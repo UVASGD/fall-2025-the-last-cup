@@ -92,6 +92,7 @@ public class PipeDropoff : MonoBehaviour
     {
         if (exitDoor != null)
         {
+            AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.door);
             doorIsOpening = true;
         }
         else
@@ -104,6 +105,7 @@ public class PipeDropoff : MonoBehaviour
     {
         if (sprinklerParticles != null)
         {
+            AudioManager.audioManagerInstance.PlaySFX(AudioManager.audioManagerInstance.sprinklers);
             for (int i = 0; i < sprinklerParticles.Length; i++)
             {
                 sprinklerParticles[i].Play();
@@ -118,7 +120,8 @@ public class PipeDropoff : MonoBehaviour
         {
             for (int i = 0; i < fires.Length; i++)
             {
-                fires[i].SetActive(false);
+                // Destroy fire rather than have set to inactive
+                Destroy(fires[i]);
             }
         }
         else

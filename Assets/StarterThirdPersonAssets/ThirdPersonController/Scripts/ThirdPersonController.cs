@@ -155,6 +155,7 @@ namespace StarterAssets
 
         private ConveyorBelt currentConveyorBelt;
 
+        private AudioSource walkingLoopSource;
 
         private bool IsCurrentDeviceMouse
         {
@@ -224,6 +225,7 @@ namespace StarterAssets
             }
 
             Move();
+            HandleWalkingSound();
         }
 
         private void LateUpdate()
@@ -424,6 +426,7 @@ namespace StarterAssets
                 }
             }
 
+
             _controller.Move(playerMovement + verticalMovement + conveyorVelocity);
 
 
@@ -521,22 +524,6 @@ namespace StarterAssets
                 GroundedRadius);
         }
 
-        private void OnFootstep(AnimationEvent animationEvent)
-        {
-            if (animationEvent.animatorClipInfo.weight > 0.5f && _audioManager != null)
-            {
-                _audioManager.PlayFootstep(transform.TransformPoint(_controller.center));
-            }
-        }
-
-        private void OnLand(AnimationEvent animationEvent)
-        {
-            if (animationEvent.animatorClipInfo.weight > 0.5f && _audioManager != null)
-            {
-                _audioManager.PlayLanding(transform.TransformPoint(_controller.center));
-            }
-        }
-
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("ConveyorBelt"))
@@ -581,6 +568,33 @@ namespace StarterAssets
                     flyingState = false;
                     lastFlying = false;
                 }
+            }
+        }
+
+        private void HandleWalkingSound()
+        {
+            bool isMoving = _input.move != Vector2.zero && Grounded;
+
+            if (isMoving && walkingLoopSource == null && _audioManager != null)
+            {
+                walkingLoopSource = _audioManager.PlayLoopingSFX(_audioManager.footsteps[0]);
+                if (walkingLoopSource != null)
+                {
+                    walkingLoopSource.volume = _audioManager.FootstepAudioVolume;
+                }
+            }
+            else if (!isMoving && walkingLoopSource != null && _audioManager != null)
+            {
+                _audioManager.StopLoopingSFX(walkingLoopSource);
+                walkingLoopSource = null;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (walkingLoopSource != null && _audioManager != null)
+            {
+                _audioManager.StopLoopingSFX(walkingLoopSource);
             }
         }
     }

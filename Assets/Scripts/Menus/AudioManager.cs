@@ -18,15 +18,35 @@ public class AudioManager : MonoBehaviour
 
     [Header("Level Music")]
     public AudioClip section1BackgroundMusic;
+    public AudioClip section2BackgroundMusic;
+    public AudioClip section3BackgroundMusic;
+    public AudioClip section4BackgroundMusic;
+    public AudioClip creditsBackgroundMusic;
 
-    [Header("Movement")]
+    [Header("Movement and Mechanics")]
     public AudioClip[] footsteps;
-    public AudioClip landing;
     [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+    public AudioClip rotate;
+    public AudioClip scoopable;
+    public AudioClip equipment;
+    public AudioClip squirt;
+    public AudioClip jetpack;
+    public AudioClip zipline;
+
+    [Header("Environmental Hazards")]
+    public AudioClip fire;
+    public AudioClip flies;
+    public AudioClip mouse;
+    public AudioClip mouseAttacked;
+    public AudioClip bird;
+    public AudioClip birdAttacked;
 
     [Header("Misc")]
-    public AudioClip pickup_dirt;
-    public AudioClip pickup_item;
+    public AudioClip door;
+    public AudioClip sprinklers;
+    public AudioClip hydraulicPress;
+    public AudioClip checkpoint;
+    public AudioClip push;
 
     public static AudioManager audioManagerInstance;
 
@@ -45,13 +65,28 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        switch (sceneIndex)
         {
-            PlayMusic(menuBackground);
-        }
-        else
-        {
-            PlayMusic(section1BackgroundMusic);
+            case 0:
+                PlayMusic(menuBackground);
+                break;
+            case 1:
+                PlayMusic(section1BackgroundMusic);
+                break;
+            case 2:
+                PlayMusic(section2BackgroundMusic);
+                break;
+            case 3:
+                PlayMusic(section3BackgroundMusic);
+                break;
+            case 4:
+                PlayMusic(section4BackgroundMusic);
+                break;
+            case 5:
+                PlayMusic(creditsBackgroundMusic);
+                break;
         }
     }
 
@@ -73,6 +108,29 @@ public class AudioManager : MonoBehaviour
             sfxSource.PlayOneShot(sfxClip);
         }
     }
+
+    public AudioSource PlayLoopingSFX(AudioClip sfxClip)
+    {
+        if (sfxClip == null) return null;
+
+        AudioSource source = gameObject.AddComponent<AudioSource>();
+        source.clip = sfxClip;
+        source.loop = true;
+        source.outputAudioMixerGroup = sfxSource.outputAudioMixerGroup;
+        source.Play();
+
+        return source;
+    }
+
+    public void StopLoopingSFX(AudioSource source)
+    {
+        if (source != null)
+        {
+            source.Stop();
+            Destroy(source);
+        }
+    }
+
 
     public void StopMusic()
     {
@@ -98,15 +156,6 @@ public class AudioManager : MonoBehaviour
 
             sfxSource.transform.position = position;
             sfxSource.PlayOneShot(footsteps[index], FootstepAudioVolume);
-        }
-    }
-
-    public void PlayLanding(Vector3 position)
-    {
-        if (landing != null && sfxSource != null)
-        {
-            sfxSource.transform.position = position;
-            sfxSource.PlayOneShot(landing, FootstepAudioVolume);
         }
     }
 }
