@@ -24,6 +24,9 @@ public class HydraulicPress : MonoBehaviour
     private GameObject playerObject;
     private bool isPlaying = false;
 
+    [Header("Respawn Settings")]
+    [SerializeField] private Transform respawnPoint;
+
     private enum PressState
     {
         MovingDown,
@@ -144,27 +147,16 @@ public class HydraulicPress : MonoBehaviour
         if (playerObject == null)
             return;
 
-        RespawnScript[] respawnScripts = FindObjectsByType<RespawnScript>(FindObjectsSortMode.None);
-
-        if (respawnScripts.Length > 0)
+        CharacterController controller = playerObject.GetComponent<CharacterController>();
+        if (controller != null && respawnPoint != null)
         {
-            foreach (RespawnScript respawnScript in respawnScripts)
-            {
-                if (respawnScript.player == playerObject && respawnScript.respawnPoint != null)
-                {
-                    CharacterController controller = playerObject.GetComponent<CharacterController>();
-                    if (controller != null)
-                    {
-                        controller.enabled = false;
-                        playerObject.transform.position = respawnScript.respawnPoint.transform.position;
-                        controller.enabled = true;
-                    }
+            controller.enabled = false;
+            playerObject.transform.position = respawnPoint.position;
+            playerObject.transform.rotation = respawnPoint.rotation;
+            controller.enabled = true;
 
-                    playerInCrushZone = false;
-                    playerObject = null;
-                    return;
-                }
-            }
+            playerInCrushZone = false;
+            playerObject = null;
         }
     }
 
