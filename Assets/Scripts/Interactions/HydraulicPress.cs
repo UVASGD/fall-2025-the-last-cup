@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class HydraulicPress : MonoBehaviour
 {
+    
     [Header("Press Components")]
     [SerializeField] private Transform press;
     [SerializeField] private Transform pressHolder;

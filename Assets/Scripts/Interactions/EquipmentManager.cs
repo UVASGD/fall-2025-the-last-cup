@@ -5,6 +5,12 @@ public enum EquipmentType { None, Straw, BucketHandle, JetPack }
 [DisallowMultipleComponent]
 public class EquipmentManager : MonoBehaviour
 {
+    [SerializeField]
+	AudioSource sheathSound;
+
+	[SerializeField]
+	AudioSource unsheathSound;
+
     [Header("Cup reference")]
     public CupController cup;                       // Uses cup.spawnPoint to drop on unequip
 
@@ -70,6 +76,7 @@ public class EquipmentManager : MonoBehaviour
         // Hide world pickup while equipped (no physics changes)
         pickup.gameObject.SetActive(false);
 
+        sheathSound.Play();
         // Play scoop animation
         animationManager.Scoop();
 
@@ -91,6 +98,7 @@ public class EquipmentManager : MonoBehaviour
             currentPickup.gameObject.SetActive(true);
         }
 
+        unsheathSound.Play();
         // Play descoop animation
         animationManager.Descoop();
 

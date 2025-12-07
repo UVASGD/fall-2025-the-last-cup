@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 public class Zipline : MonoBehaviour, IInteractable
 {
+    [SerializeField]
+    public AudioSource source;
+
     [Header("Endpoints & visuals")]
     [SerializeField] public Zipline targetZip;
     [SerializeField] private LineRenderer cable;
@@ -137,6 +140,7 @@ public class Zipline : MonoBehaviour, IInteractable
         if (player == null) player = interactor?.gameObject;
 
         StartZipline(player);
+        source.Play();
         return true;
     }
 

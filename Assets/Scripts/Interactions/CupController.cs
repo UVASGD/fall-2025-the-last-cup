@@ -4,6 +4,15 @@ using UnityEngine.EventSystems;
 using System;
 
 public class CupController : MonoBehaviour {
+	[SerializeField]
+	AudioSource sheathSound;
+
+	[SerializeField]
+	AudioSource unsheathSound;
+
+	[SerializeField]
+	AudioSource swingSound;
+
 	[Header("Cup Components")]
 	public SkinnedMeshRenderer cupBodyRenderer;
 
@@ -57,6 +66,7 @@ public class CupController : MonoBehaviour {
 		if (Input.GetMouseButtonDown(0) && IsFull && !IsInCooldown)
 			TryDescoop();
 		else if (Input.GetKeyDown(KeyCode.R)) {
+			swingSound.Play();
 			animationManager.Spin();
 		}
 	}
@@ -74,6 +84,7 @@ public class CupController : MonoBehaviour {
 		this.SetMatieral(mat);
 
 		if (type != ScoopableObject.ScoopType.PouringWater && IsFull == false) {
+			sheathSound.Play();
 			animationManager.Scoop();
 		}
 		if (heldObject != null) heldObject.SetActive(false);
@@ -88,6 +99,7 @@ public class CupController : MonoBehaviour {
 			if (Physics.Raycast(transform.position, transform.forward, out var hit, 3f)) {
 				if (hit.collider.TryGetComponent<Container>(out var container)) {
 					if (container.TryAdd(heldType, heldMaterial)) {
+						unsheathSound.Play();
 						animationManager.Descoop();
 						EmptyCup();
 						cooldownTimer = cooldownDuration;
@@ -115,6 +127,7 @@ public class CupController : MonoBehaviour {
 		}
 
 		if (IsFull) {
+			unsheathSound.Play();
 			animationManager.Descoop();
 			EmptyCup();
 		}

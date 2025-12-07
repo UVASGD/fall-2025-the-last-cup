@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2647917230671439419}
   - component: {fileID: 1082416604379164346}
-  - component: {fileID: 7905243041908624474}
   - component: {fileID: 1409743947405648528}
+  - component: {fileID: 7905243041908624474}
+  - component: {fileID: -4407079588121002221}
   m_Layer: 11
   m_Name: Zipline
   m_TagString: Zipline
@@ -58,50 +59,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 3.172986, z: 0.53235626}
   m_Center: {x: 0, y: 0.5006852, z: -0.011997223}
---- !u!114 &7905243041908624474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1582543866377477107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f79cdd8484aabdb4ba687befc6cea43a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetZip: {fileID: 0}
-  cable: {fileID: 1409743947405648528}
-  zipTransform: {fileID: 4212834925427053579}
-  leftParallelZipline: {fileID: 0}
-  rightParallelZipline: {fileID: 0}
-  switchCooldown: 0.5
-  doubleTapWindow: 0.3
-  switchTransitionDuration: 1
-  switchWindupAmount: 0.8
-  enableDodge: 1
-  maxDodgeDistance: 0.01
-  dodgeSpeed: 3
-  dodgeReturnSpeed: 2
-  dodgeRotationAngle: 60
-  dodgeSmoothTime: 0.1
-  zipSpeed: 10
-  hangLocalOffset: {x: 0, y: -1.08, z: 0}
-  exitForward: 0.6
-  exitDown: 0.5
-  faceAlongCable: 1
-  overrideCameraOnZip: 1
-  camLocalOffset: {x: 0, y: -0.5, z: -3}
-  camLookUpPitch: -5
-  ziplineFOV: 40
-  camFollowLerp: 12
-  zipping: 0
-  animationManager: {fileID: 0}
-  obstacleCheckDistance: 0.05
-  obstacleCheckRadius: 0.05
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 1
 --- !u!120 &1409743947405648528
 LineRenderer:
   serializedVersion: 2
@@ -209,6 +166,148 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7905243041908624474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582543866377477107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f79cdd8484aabdb4ba687befc6cea43a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: {fileID: -4407079588121002221}
+  targetZip: {fileID: 0}
+  cable: {fileID: 1409743947405648528}
+  zipTransform: {fileID: 4212834925427053579}
+  leftParallelZipline: {fileID: 0}
+  rightParallelZipline: {fileID: 0}
+  switchCooldown: 0.5
+  doubleTapWindow: 0.3
+  switchTransitionDuration: 1
+  switchWindupAmount: 0.8
+  enableDodge: 1
+  maxDodgeDistance: 0.01
+  dodgeSpeed: 3
+  dodgeReturnSpeed: 2
+  dodgeRotationAngle: 60
+  dodgeSmoothTime: 0.1
+  zipSpeed: 10
+  hangLocalOffset: {x: 0, y: -1.08, z: 0}
+  exitForward: 0.6
+  exitDown: 0.5
+  faceAlongCable: 1
+  overrideCameraOnZip: 1
+  camLocalOffset: {x: 0, y: -0.5, z: -3}
+  camLookUpPitch: -5
+  ziplineFOV: 40
+  camFollowLerp: 12
+  zipping: 0
+  animationManager: {fileID: 0}
+  obstacleCheckDistance: 0.05
+  obstacleCheckRadius: 0.05
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 1
+--- !u!82 &-4407079588121002221
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582543866377477107}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -1905718726343871640, guid: a341e9beaa5dea546a29264bbe0ecfdc, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 3ab0809dcfc3a4d5988b22ed7e826740, type: 3}
+  m_Resource: {fileID: 8300000, guid: 3ab0809dcfc3a4d5988b22ed7e826740, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 25
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3414100932025189759
 GameObject:
   m_ObjectHideFlags: 0

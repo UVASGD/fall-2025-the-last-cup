@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class SquirtMechanic : MonoBehaviour
 {
+    [SerializeField]
+    AudioSource source;
+
     [Header("Squirting Setup")]
     public WaterProjectileConfig projectileConfig;
     public Transform strawTip;
@@ -84,6 +87,7 @@ public class SquirtMechanic : MonoBehaviour
 
 		while (fireTimer >= interval && cupController.movementController._isAimingActive) {
 			fireTimer -= interval;
+            source.Play();
 			this.waterManager.SpawnWaterDroplet(this.strawTip);
 		}
 		
