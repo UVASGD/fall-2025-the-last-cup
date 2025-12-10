@@ -128,16 +128,15 @@ public class MenuController: MonoBehaviour
         // Instead of blindly resetting, check if player has played before
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            if (PlayerPrefs.HasKey("hasPlayedBefore"))
-            {
-                LoadPlayerSettings();
-            }
-            else
+            if (!PlayerPrefs.HasKey("hasPlayedBefore"))
             {
                 ResetButton();
-                PlayerPrefs.SetInt("hasPlayedBefore", 1); // Mark that player has played
+                PlayerPrefs.SetInt("hasPlayedBefore", 1);
             }
         }
+
+        // Always load settings
+        LoadPlayerSettings();
 
         // Meant to help mute initial button sound at start of game bootup
         isStartup = false;
